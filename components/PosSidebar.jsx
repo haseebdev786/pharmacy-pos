@@ -44,33 +44,33 @@ export default function PosSidebar({ user, open, onClose }) {
         />
       )}
       <aside
-        className={`no-print fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-slate-900 text-white transition-transform ${
+        className={`no-print fixed inset-y-0 left-0 z-40 flex w-[17rem] max-w-[84vw] flex-col bg-slate-900 text-white shadow-lift transition-transform lg:w-64 lg:max-w-none lg:shadow-none ${
           open ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >
-        <div className="flex items-center justify-between gap-2 px-4 py-4">
-          <div className="flex items-center gap-2.5">
+        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/10 px-4 py-3">
+          <div className="flex min-w-0 items-center gap-2.5">
             <span className="icon-chip icon-chip-sm">
               <Icon name="pill" className="h-5 w-5" />
             </span>
-            <p className="text-lg font-bold">Pharmacy POS</p>
+            <p className="truncate text-lg font-bold">Pharmacy POS</p>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close menu"
-            className="rounded px-2 py-1 text-sm text-slate-300 hover:bg-slate-800 lg:hidden"
+            className="rounded-lg p-1.5 text-slate-300 hover:bg-slate-800 lg:hidden"
           >
-            Close
+            <Icon name="x" className="h-5 w-5" />
           </button>
         </div>
-        <nav className="flex-1 overflow-y-auto px-2 pb-4">
+        <nav className="sidebar-nav min-h-0 flex-1 overflow-y-auto px-2 py-1.5">
           {GROUPS.map((group) => {
             const items = visible.filter((item) => item.group === group);
             if (items.length === 0) return null;
             return (
-              <div key={group} className="mb-3">
-                <p className="px-3 pb-1 pt-2 text-xs font-medium uppercase tracking-wide text-slate-400">
+              <div key={group} className="mb-2">
+                <p className="px-3 pb-0.5 pt-2.5 text-[11px] font-medium uppercase tracking-wide text-slate-400">
                   {group}
                 </p>
                 {items.map((item) => (
@@ -79,7 +79,7 @@ export default function PosSidebar({ user, open, onClose }) {
                     href={item.href}
                     onClick={onClose}
                     aria-current={isActive(item.href) ? "page" : undefined}
-                    className={`side-link mb-1 ${isActive(item.href) ? "side-link-active" : ""}`}
+                    className={`side-link mb-0.5 ${isActive(item.href) ? "side-link-active" : ""}`}
                   >
                     <Icon name={item.icon} className="h-5 w-5 shrink-0" />
                     {item.label}
@@ -89,27 +89,24 @@ export default function PosSidebar({ user, open, onClose }) {
             );
           })}
         </nav>
-        <div className="border-t border-slate-800 px-4 py-4">
-          <div className="flex items-center gap-3">
+        <div className="shrink-0 border-t border-white/10 px-3 py-3">
+          <div className="flex items-center gap-2.5 px-1">
             <span
               aria-hidden="true"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-600 text-sm font-semibold text-white"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-600 text-xs font-semibold text-white"
             >
               {user?.name?.charAt(0)}
             </span>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">{user?.name}</p>
-              <p className="truncate text-xs text-slate-400">{user?.email}</p>
+              <p className="truncate text-[11px] leading-tight text-slate-400">{user?.email}</p>
             </div>
-          </div>
-          <p className="mt-2 text-xs text-slate-400">
-            Role:{" "}
-            <Badge tone={roleTone(user?.role)} className="capitalize">
+            <Badge tone={roleTone(user?.role)} className="shrink-0 capitalize">
               {user?.role}
             </Badge>
-          </p>
-          <div className="mt-3">
-            <LogoutButton />
+          </div>
+          <div className="mt-2.5">
+            <LogoutButton variant="dark" className="btn-block" />
           </div>
         </div>
       </aside>

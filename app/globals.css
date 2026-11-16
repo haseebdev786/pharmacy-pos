@@ -30,6 +30,14 @@
 }
 
 @layer base {
+  /* Clip horizontal overflow (wide tables scroll inside .table-wrap
+     instead of pushing the whole page sideways). `clip` keeps the
+     sticky header working; `hidden` would break it. */
+  html,
+  body {
+    overflow-x: clip;
+  }
+
   ::selection {
     background: var(--color-brand-100);
     color: var(--color-brand-900);
@@ -355,7 +363,7 @@
     align-items: center;
     gap: 0.625rem;
     border-radius: 0.625rem;
-    padding: 0.5rem 0.75rem;
+    padding: 0.4375rem 0.75rem;
     font-size: 0.875rem;
     line-height: 1.25rem;
     color: var(--color-slate-300);
@@ -373,6 +381,48 @@
   }
   .side-link-active svg {
     color: var(--color-brand-400);
+  }
+
+  /* Thin dark scrollbar for the sidebar nav: the native Windows
+     scrollbar (with arrow buttons) looks broken inside the dark
+     drawer, so the nav carries its own slim thumb. */
+  .sidebar-nav {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(71 85 105) transparent;
+    overscroll-behavior: contain;
+  }
+  .sidebar-nav::-webkit-scrollbar {
+    width: 6px;
+  }
+  .sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgb(71 85 105);
+    border-radius: 9999px;
+  }
+  .sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Dark logout button for the dark sidebar (the white
+     .btn-secondary block looked pasted-on down there). */
+  .side-logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.625rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    color: #fff;
+    background: rgb(255 255 255 / 0.08);
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: background-color 150ms;
+  }
+  .side-logout:hover {
+    background: rgb(255 255 255 / 0.14);
   }
 
   /* ---- Pills (POS payment methods). ---- */

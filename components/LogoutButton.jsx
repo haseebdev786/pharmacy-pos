@@ -3,8 +3,9 @@
 
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { Icon } from "@/components/ui.jsx";
 
-export default function LogoutButton() {
+export default function LogoutButton({ className, variant }) {
   const router = useRouter();
 
   async function handleLogout() {
@@ -13,12 +14,14 @@ export default function LogoutButton() {
     router.refresh();
   }
 
+  const dark = variant === "dark";
   return (
     <button
       type="button"
       onClick={handleLogout}
-      className="btn btn-secondary"
+      className={`${dark ? "side-logout" : "btn btn-secondary"}${className ? ` ${className}` : ""}`}
     >
+      {dark && <Icon name="logout" className="h-4 w-4" />}
       Logout
     </button>
   );
