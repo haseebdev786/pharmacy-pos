@@ -7,6 +7,7 @@
 import { redirect } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import UserActions from "@/components/UserActions";
+import { PageHeader, Badge, roleTone } from "@/components/ui.jsx";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, hasRole } from "@/lib/session";
 import { formatDate } from "@/lib/format";
@@ -23,8 +24,8 @@ export default async function UsersPage() {
     return (
       <AppShell user={shellUser}>
         <div className="space-y-6">
-          <h1 className="text-2xl font-bold text-gray-900">Users</h1>
-          <p className="rounded-2xl bg-white p-5 text-sm text-gray-600 shadow-sm ring-1 ring-gray-100">
+          <PageHeader title="Users" />
+          <p className="card card-pad text-sm text-slate-600">
             Access denied. Only Admin can manage users.
           </p>
         </div>
@@ -47,13 +48,10 @@ export default async function UsersPage() {
   return (
     <AppShell user={shellUser}>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Users</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Staff accounts, their roles, and who can sign in. Deactivated
-            staff lose access immediately, even with a live session.
-          </p>
-        </div>
+        <PageHeader
+          title="Users"
+          description="Staff accounts, their roles, and who can sign in. Deactivated staff lose access immediately, even with a live session."
+        />
 
         <div className="rounded-2xl bg-amber-50 p-5 text-sm text-amber-900 shadow-sm ring-1 ring-amber-100">
           <p className="font-semibold">Adding new staff</p>
@@ -63,44 +61,50 @@ export default async function UsersPage() {
           </p>
         </div>
 
-        <section className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
+        <section className="card card-pad">
           {users.length === 0 ? (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-slate-500">
               No users yet. The first account to sign up becomes Admin.
             </p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
+            <div className="table-wrap">
+              <table className="tbl">
                 <thead>
-                  <tr className="border-b text-xs uppercase tracking-wide text-gray-500">
-                    <th className="py-2 pr-3">Name</th>
-                    <th className="py-2 pr-3">Email</th>
-                    <th className="py-2 pr-3">Role</th>
-                    <th className="py-2 pr-3">Status</th>
-                    <th className="py-2 pr-3">Created</th>
-                    <th className="py-2">Actions</th>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {users.map((row) => (
-                    <tr key={row.id} className="border-b last:border-0">
-                      <td className="py-2 pr-3 font-medium text-gray-900">
+                    <tr key={row.id}>
+                      <td className="font-medium text-slate-900">
                         {row.name}
                         {row.id === user.id ? (
-                          <span className="ml-2 text-xs font-normal text-gray-500">
+                          <span className="ml-2 text-xs font-normal text-slate-500">
                             (you)
                           </span>
                         ) : null}
                       </td>
-                      <td className="py-2 pr-3 text-gray-600">{row.email}</td>
-                      <td className="py-2 pr-3">{row.role}</td>
-                      <td className="py-2 pr-3">
-                        {row.isActive ? "Active" : "Deactivated"}
+                      <td className="text-slate-600">{row.email}</td>
+                      <td>
+                        <Badge tone={roleTone(row.role)} className="capitalize">
+                          {row.role}
+                        </Badge>
                       </td>
-                      <td className="py-2 pr-3 text-gray-600">
+                      <td>
+                        <Badge tone={row.isActive ? "emerald" : "slate"}>
+                          {row.isActive ? "Active" : "Deactivated"}
+                        </Badge>
+                      </td>
+                      <td className="text-slate-600">
                         {formatDate(row.createdAt)}
                       </td>
-                      <td className="py-2">
+                      <td>
                         <UserActions
                           user={{
                             id: row.id,
@@ -118,7 +122,7 @@ export default async function UsersPage() {
               </table>
             </div>
           )}
-          <p className="mt-3 text-xs text-gray-500">
+          <p className="mt-3 text-xs text-slate-500">
             You cannot change your own role or active status, and the last
             active Admin cannot be demoted or deactivated — these guards
             keep the shop from being locked out.

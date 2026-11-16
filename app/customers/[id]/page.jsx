@@ -7,6 +7,7 @@ import { getCurrentUser } from "@/lib/session";
 import { formatPKR, formatDate } from "@/lib/format";
 import CustomerForm from "@/components/CustomerForm";
 import CustomerPaymentForm from "@/components/CustomerPaymentForm";
+import { PageHeader, Badge, Icon } from "@/components/ui.jsx";
 
 export const instant = false;
 
@@ -45,10 +46,10 @@ export default async function CustomerDetailPage({ params }) {
     return (
       <AppShell user={shellUser}>
         <div className="space-y-6">
-          <h1 className="text-2xl font-bold text-gray-900">Customer not found</h1>
-          <p className="rounded-2xl bg-white p-5 text-sm text-gray-600 shadow-sm ring-1 ring-gray-100">
+          <PageHeader title="Customer not found" />
+          <p className="card card-pad text-sm text-slate-600">
             This customer does not exist or was removed.{" "}
-            <Link href="/customers" className="font-medium text-gray-900 underline">
+            <Link href="/customers" className="link">
               Back to customers
             </Link>
           </p>
@@ -69,27 +70,30 @@ export default async function CustomerDetailPage({ params }) {
   return (
     <AppShell user={shellUser}>
       <div className="space-y-6">
-        <div>
-          <Link href="/customers" className="text-sm font-medium text-gray-600 hover:text-gray-900">
-            ← All customers
-          </Link>
-          <h1 className="mt-2 text-2xl font-bold text-gray-900">{customer.name}</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            {[customer.phone, customer.address].filter(Boolean).join(" · ") ||
-              "No contact details saved."}
-          </p>
-          {customer.notes ? (
-            <p className="mt-1 text-sm text-gray-500">{customer.notes}</p>
-          ) : null}
-        </div>
+        <Link href="/customers" className="link inline-flex items-center gap-1.5 text-sm">
+          <Icon name="arrowLeft" className="h-4 w-4" />
+          All customers
+        </Link>
+        <PageHeader
+          title={customer.name}
+          description={
+            <>
+              {[customer.phone, customer.address].filter(Boolean).join(" · ") ||
+                "No contact details saved."}
+              {customer.notes ? (
+                <p className="mt-1">{customer.notes}</p>
+              ) : null}
+            </>
+          }
+        />
 
-        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-          <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+        <div className="card card-pad">
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
             Credit balance (udhaar)
           </p>
           <p
             className={`mt-1 text-2xl font-bold ${
-              customer.creditBalance > 0 ? "text-red-600" : "text-gray-900"
+              customer.creditBalance > 0 ? "text-red-600" : "text-slate-900"
             }`}
           >
             {formatPKR(customer.creditBalance)}
@@ -97,12 +101,12 @@ export default async function CustomerDetailPage({ params }) {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-            <h2 className="font-semibold text-gray-900">Edit customer</h2>
+          <div className="card card-pad">
+            <h2 className="section-title">Edit customer</h2>
             <CustomerForm customer={customerFormProps} />
           </div>
-          <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-            <h2 className="font-semibold text-gray-900">Record a payment</h2>
+          <div className="card card-pad">
+            <h2 className="section-title">Record a payment</h2>
             <CustomerPaymentForm
               customerId={customer.id}
               creditBalance={customer.creditBalance}
@@ -111,38 +115,50 @@ export default async function CustomerDetailPage({ params }) {
         </div>
 
         <div>
-          <h2 className="mb-3 font-semibold text-gray-900">Recent bills</h2>
+          <h2 className="section-title mb-3">Recent bills</h2>
           {customer.sales.length === 0 ? (
-            <p className="rounded-2xl bg-white p-5 text-sm text-gray-600 shadow-sm ring-1 ring-gray-100">
+            <p className="card card-pad text-sm text-slate-600">
               No bills for this customer yet.
             </p>
           ) : (
-            <div className="overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
-              <table className="w-full text-left text-sm">
+            <div className="table-wrap">
+              <table className="tbl">
                 <thead>
-                  <tr className="border-b border-gray-100 text-xs uppercase tracking-wide text-gray-500">
-                    <th className="px-4 py-3">Bill</th>
-                    <th className="px-4 py-3">Date</th>
-                    <th className="px-4 py-3">Payment</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3 text-right">Total</th>
+                  <tr>
+                    <th>Bill</th>
+                    <th>Date</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                    <th className="text-right">Total</th>
                   </tr>
                 </thead>
                 <tbody>
                   {customer.sales.map((sale) => (
-                    <tr key={sale.id} className="border-b border-gray-50 last:border-0">
-                      <td className="px-4 py-3">
+                    <tr key={sale.id}>
+                      <td>
                         <Link
                           href={`/sales/${sale.id}`}
-                          className="font-medium text-gray-900 underline-offset-2 hover:underline"
+                          className="link"
                         >
                           {sale.billNo}
                         </Link>
                       </td>
-                      <td className="px-4 py-3 text-gray-600">{formatDate(sale.createdAt)}</td>
-                      <td className="px-4 py-3 text-gray-600">{sale.paymentMethod}</td>
-                      <td className="px-4 py-3 text-gray-600">{sale.status}</td>
-                      <td className="px-4 py-3 text-right font-medium text-gray-900">
+                      <td>{formatDate(sale.createdAt)}</td>
+                      <td>{sale.paymentMethod}</td>
+                      <td>
+                        <Badge
+                          tone={
+                            sale.status === "voided"
+                              ? "red"
+                              : sale.status === "completed"
+                                ? "green"
+                                : "amber"
+                          }
+                        >
+                          {sale.status}
+                        </Badge>
+                      </td>
+                      <td className="text-right font-medium text-slate-900">
                         {formatPKR(sale.grandTotal)}
                       </td>
                     </tr>
@@ -154,33 +170,33 @@ export default async function CustomerDetailPage({ params }) {
         </div>
 
         <div>
-          <h2 className="mb-3 font-semibold text-gray-900">Payments received</h2>
+          <h2 className="section-title mb-3">Payments received</h2>
           {customer.payments.length === 0 ? (
-            <p className="rounded-2xl bg-white p-5 text-sm text-gray-600 shadow-sm ring-1 ring-gray-100">
+            <p className="card card-pad text-sm text-slate-600">
               No payments recorded yet.
             </p>
           ) : (
-            <div className="overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
-              <table className="w-full text-left text-sm">
+            <div className="table-wrap">
+              <table className="tbl">
                 <thead>
-                  <tr className="border-b border-gray-100 text-xs uppercase tracking-wide text-gray-500">
-                    <th className="px-4 py-3">Date</th>
-                    <th className="px-4 py-3 text-right">Amount</th>
-                    <th className="px-4 py-3">Method</th>
-                    <th className="px-4 py-3">Note</th>
-                    <th className="px-4 py-3">Recorded by</th>
+                  <tr>
+                    <th>Date</th>
+                    <th className="text-right">Amount</th>
+                    <th>Method</th>
+                    <th>Note</th>
+                    <th>Recorded by</th>
                   </tr>
                 </thead>
                 <tbody>
                   {customer.payments.map((payment) => (
-                    <tr key={payment.id} className="border-b border-gray-50 last:border-0">
-                      <td className="px-4 py-3 text-gray-600">{formatDate(payment.createdAt)}</td>
-                      <td className="px-4 py-3 text-right font-medium text-gray-900">
+                    <tr key={payment.id}>
+                      <td>{formatDate(payment.createdAt)}</td>
+                      <td className="text-right font-medium text-slate-900">
                         {formatPKR(payment.amount)}
                       </td>
-                      <td className="px-4 py-3 text-gray-600">{payment.method}</td>
-                      <td className="px-4 py-3 text-gray-600">{payment.note || "-"}</td>
-                      <td className="px-4 py-3 text-gray-600">{payment.createdBy.name}</td>
+                      <td>{payment.method}</td>
+                      <td>{payment.note || "-"}</td>
+                      <td>{payment.createdBy.name}</td>
                     </tr>
                   ))}
                 </tbody>

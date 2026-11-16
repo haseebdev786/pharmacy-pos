@@ -63,8 +63,8 @@ export default function SettingsForm({ settings }) {
     }
   }
 
-  const fieldClass = "w-full rounded-lg border border-gray-300 px-3 py-2";
-  const labelClass = "mb-1 block font-medium text-gray-700";
+  const fieldClass = "input";
+  const labelClass = "label";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -129,7 +129,7 @@ export default function SettingsForm({ settings }) {
             onChange={(event) => setTaxEnabled(event.target.checked)}
             className="h-4 w-4"
           />
-          <span className="font-medium text-gray-700">
+          <span className="font-medium text-slate-700">
             Charge tax on bills (uses the rate above)
           </span>
         </label>
@@ -145,7 +145,7 @@ export default function SettingsForm({ settings }) {
             required
             className={fieldClass}
           />
-          <span className="mt-1 block text-xs text-gray-500">
+          <span className="form-note block">
             Batches expiring within this many days show in the expiry report.
           </span>
         </label>
@@ -171,14 +171,14 @@ export default function SettingsForm({ settings }) {
             required
             className={fieldClass}
           />
-          <span className="mt-1 block text-xs text-gray-500">
+          <span className="form-note block">
             Warn when a customer&apos;s credit passes this amount. 0 turns the
             warning off.
           </span>
         </label>
       </div>
       {error ? (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="form-error">
           {error}
         </p>
       ) : null}
@@ -190,7 +190,7 @@ export default function SettingsForm({ settings }) {
       <button
         type="submit"
         disabled={saving}
-        className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+        className="btn btn-primary"
       >
         {saving ? "Saving..." : "Save settings"}
       </button>

@@ -116,7 +116,7 @@ export default function ReturnForm({ sale }) {
 
   if (sale?.status === "voided") {
     return (
-      <p className="rounded-2xl bg-white p-5 text-sm text-gray-600 shadow-sm ring-1 ring-gray-100">
+      <p className="card card-pad text-sm text-slate-600">
         Sale {sale.billNo} is voided, so no return can be recorded against it.
       </p>
     );
@@ -124,7 +124,7 @@ export default function ReturnForm({ sale }) {
 
   if (allReturned) {
     return (
-      <p className="rounded-2xl bg-white p-5 text-sm text-gray-600 shadow-sm ring-1 ring-gray-100">
+      <p className="card card-pad text-sm text-slate-600">
         Fully returned — every item on sale {sale.billNo} has already been
         returned in full.
       </p>
@@ -134,9 +134,9 @@ export default function ReturnForm({ sale }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100"
+      className="card card-pad space-y-4"
     >
-      <h2 className="font-semibold text-gray-900">Return items — {sale.billNo}</h2>
+      <h2 className="section-title">Return items — {sale.billNo}</h2>
 
       <div className="space-y-3">
         {items.map((item) => {
@@ -144,34 +144,34 @@ export default function ReturnForm({ sale }) {
           return (
             <div
               key={item.id}
-              className="grid gap-2 border-b border-gray-50 pb-3 last:border-0 last:pb-0 sm:grid-cols-[1fr_auto] sm:items-center"
+              className="grid gap-2 border-b border-slate-100 pb-3 last:border-0 last:pb-0 sm:grid-cols-[1fr_auto] sm:items-center"
             >
               <div className="text-sm">
-                <p className="font-medium text-gray-900">{item.medicineName}</p>
-                <p className="text-gray-600">
+                <p className="font-medium text-slate-900">{item.medicineName}</p>
+                <p className="text-slate-600">
                   Batch {item.batchNo} · Expiry {formatDate(item.expiryDate)}
                 </p>
-                <p className="text-gray-600">
+                <p className="text-slate-600">
                   Sold {item.qtyBaseUnits} · Already returned {item.returnedQty ?? 0} ·
                   Remaining {remaining}
                 </p>
                 {qtyFor(item) > 0 ? (
-                  <p className="text-gray-600">
+                  <p className="text-slate-600">
                     Refund for this line:{" "}
-                    <span className="font-medium text-gray-900">
+                    <span className="font-medium text-slate-900">
                       {formatPKR(refundFor(item))}
                     </span>
                   </p>
                 ) : null}
               </div>
               <label className="block text-sm">
-                <span className="font-medium text-gray-900">Qty to return</span>
+                <span className="label">Qty to return</span>
                 <input
                   type="number"
                   min="0"
                   max={remaining}
                   step="1"
-                  className="mt-1 w-28 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+                  className="input w-28"
                   value={quantities[item.id] ?? "0"}
                   onChange={(e) => setQty(item, e.target.value)}
                   disabled={remaining <= 0}
@@ -183,9 +183,9 @@ export default function ReturnForm({ sale }) {
       </div>
 
       <label className="block text-sm">
-        <span className="font-medium text-gray-900">Reason *</span>
+        <span className="label">Reason *</span>
         <textarea
-          className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+          className="input"
           rows={2}
           value={reason}
           onChange={(e) => setReason(e.target.value)}
@@ -194,13 +194,13 @@ export default function ReturnForm({ sale }) {
         />
       </label>
 
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-slate-600">
         Estimated refund:{" "}
-        <span className="font-medium text-gray-900">{formatPKR(estimatedRefund)}</span>
+        <span className="font-medium text-slate-900">{formatPKR(estimatedRefund)}</span>
       </p>
 
       {error ? (
-        <p role="alert" className="text-sm font-medium text-red-600">
+        <p role="alert" className="form-error">
           {error}
         </p>
       ) : null}
@@ -213,7 +213,7 @@ export default function ReturnForm({ sale }) {
       <button
         type="submit"
         disabled={saving || !hasAnyQty}
-        className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-50"
+        className="btn btn-primary"
       >
         {saving ? "Recording…" : "Record return"}
       </button>

@@ -64,19 +64,18 @@ export default function CustomerPaymentForm({ customerId, creditBalance }) {
     }
   }
 
-  const inputClass =
-    "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900";
+  const inputClass = "input";
 
   return (
     <form onSubmit={handleSubmit} className="mt-4 space-y-3">
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-slate-600">
         Current balance:{" "}
-        <span className="font-medium text-gray-900">{formatPKR(creditBalance)}</span>
+        <span className="font-medium text-slate-900">{formatPKR(creditBalance)}</span>
       </p>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="block text-sm">
-          <span className="font-medium text-gray-900">Amount (Rs) *</span>
+          <span className="label">Amount (Rs) *</span>
           <input
             type="number"
             min="0"
@@ -89,7 +88,7 @@ export default function CustomerPaymentForm({ customerId, creditBalance }) {
           />
         </label>
         <label className="block text-sm">
-          <span className="font-medium text-gray-900">Method *</span>
+          <span className="label">Method *</span>
           <select
             className={inputClass}
             value={method}
@@ -103,7 +102,7 @@ export default function CustomerPaymentForm({ customerId, creditBalance }) {
           </select>
         </label>
         <label className="block text-sm sm:col-span-2">
-          <span className="font-medium text-gray-900">Note</span>
+          <span className="label">Note</span>
           <input
             className={inputClass}
             value={note}
@@ -121,7 +120,7 @@ export default function CustomerPaymentForm({ customerId, creditBalance }) {
         </p>
       ) : null}
       {error ? (
-        <p role="alert" className="text-sm font-medium text-red-600">
+        <p role="alert" className="form-error">
           {error}
         </p>
       ) : null}
@@ -134,7 +133,7 @@ export default function CustomerPaymentForm({ customerId, creditBalance }) {
       <button
         type="submit"
         disabled={saving}
-        className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-50"
+        className="btn btn-primary"
       >
         {saving ? "Recording…" : "Record payment"}
       </button>

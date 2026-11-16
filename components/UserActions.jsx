@@ -60,7 +60,7 @@ export default function UserActions({ user, currentUserId }) {
 
   if (isSelf) {
     return (
-      <span className="text-xs text-gray-500">
+      <span className="text-xs text-slate-500">
         You cannot change your own account here.
       </span>
     );
@@ -73,7 +73,7 @@ export default function UserActions({ user, currentUserId }) {
         onChange={(event) => setRole(event.target.value)}
         disabled={saving}
         aria-label={`Role for ${user.name}`}
-        className="rounded-lg border border-gray-300 px-2 py-1 text-sm disabled:opacity-50"
+        className="input input-sm w-auto disabled:opacity-50"
       >
         {ROLES.map((item) => (
           <option key={item} value={item}>
@@ -85,7 +85,7 @@ export default function UserActions({ user, currentUserId }) {
         type="button"
         onClick={handleSaveRole}
         disabled={saving || role === user.role}
-        className="rounded-lg bg-emerald-600 px-3 py-1 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+        className="btn btn-sm btn-primary"
       >
         {saving ? "Saving..." : "Save"}
       </button>
@@ -93,7 +93,7 @@ export default function UserActions({ user, currentUserId }) {
         type="button"
         onClick={handleToggleActive}
         disabled={saving}
-        className="rounded-lg border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+        className="btn btn-sm btn-secondary"
       >
         {user.isActive ? "Deactivate" : "Activate"}
       </button>

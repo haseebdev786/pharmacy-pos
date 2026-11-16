@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import SettingsForm from "@/components/SettingsForm";
 import BackupButton from "@/components/BackupButton";
+import { PageHeader } from "@/components/ui.jsx";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, hasRole } from "@/lib/session";
 
@@ -32,8 +33,8 @@ export default async function SettingsPage() {
     return (
       <AppShell user={shellUser}>
         <div className="space-y-6">
-          <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-          <p className="rounded-2xl bg-white p-5 text-sm text-gray-600 shadow-sm ring-1 ring-gray-100">
+          <PageHeader title="Settings" />
+          <p className="card card-pad text-sm text-slate-600">
             Access denied. Only Admin can view and change settings.
           </p>
         </div>
@@ -61,32 +62,29 @@ export default async function SettingsPage() {
   return (
     <AppShell user={shellUser}>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Store details, tax, receipt text and warning limits. These apply
-            to billing and receipts as soon as they are saved.
-          </p>
-        </div>
+        <PageHeader
+          title="Settings"
+          description="Store details, tax, receipt text and warning limits. These apply to billing and receipts as soon as they are saved."
+        />
 
-        <section className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-          <h2 className="mb-3 font-semibold text-gray-900">Store settings</h2>
+        <section className="card card-pad">
+          <h2 className="section-title mb-3">Store settings</h2>
           <SettingsForm settings={settings} />
         </section>
 
-        <section className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-          <h2 className="mb-3 font-semibold text-gray-900">Backup</h2>
+        <section className="card card-pad">
+          <h2 className="section-title mb-3">Backup</h2>
           <BackupButton />
-          <div className="mt-3 space-y-2 text-sm text-gray-600">
+          <div className="mt-3 space-y-2 text-sm text-slate-600">
             <p>
               The database is one file:{" "}
-              <code className="rounded bg-gray-100 px-1">prisma/dev.db</code>{" "}
+              <code className="rounded bg-slate-100 px-1">prisma/dev.db</code>{" "}
               on the shop PC. The button above downloads a copy of that file.
             </p>
             <p>
               This download is a best-effort copy of the live file while the
               server is running. The reliable backup is copying{" "}
-              <code className="rounded bg-gray-100 px-1">prisma/dev.db</code>{" "}
+              <code className="rounded bg-slate-100 px-1">prisma/dev.db</code>{" "}
               while the server is stopped.
             </p>
             <p>
@@ -97,16 +95,16 @@ export default async function SettingsPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-          <h2 className="mb-3 font-semibold text-gray-900">
+        <section className="card card-pad">
+          <h2 className="section-title mb-3">
             How the shop devices connect
           </h2>
-          <div className="space-y-2 text-sm text-gray-600">
+          <div className="space-y-2 text-sm text-slate-600">
             <p>
               The shop PC runs the POS server and holds the only database.
               Phones and other PCs in the shop open the POS over the shop
               WiFi using the PC&apos;s LAN address (for example{" "}
-              <code className="rounded bg-gray-100 px-1">
+              <code className="rounded bg-slate-100 px-1">
                 http://192.168.1.10:3000
               </code>
               ). This works without an internet package, as long as every

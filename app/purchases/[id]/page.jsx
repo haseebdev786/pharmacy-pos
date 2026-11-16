@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import AppShell from "@/components/AppShell";
+import { PageHeader, Badge, Icon } from "@/components/ui.jsx";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, hasRole } from "@/lib/session";
 import { formatPKR, formatDate } from "@/lib/format";
@@ -20,8 +21,8 @@ export default async function PurchaseDetailPage({ params }) {
     return (
       <AppShell user={shellUser}>
         <div className="space-y-6">
-          <h1 className="text-2xl font-bold text-gray-900">Purchase</h1>
-          <p className="rounded-2xl bg-white p-5 text-sm text-gray-600 shadow-sm ring-1 ring-gray-100">
+          <PageHeader title="Purchase" />
+          <p className="card card-pad text-sm text-slate-600">
             Access denied. Only pharmacists and admins can view purchases.
           </p>
         </div>
@@ -46,10 +47,10 @@ export default async function PurchaseDetailPage({ params }) {
     return (
       <AppShell user={shellUser}>
         <div className="space-y-6">
-          <h1 className="text-2xl font-bold text-gray-900">Purchase not found</h1>
-          <p className="rounded-2xl bg-white p-5 text-sm text-gray-600 shadow-sm ring-1 ring-gray-100">
+          <PageHeader title="Purchase not found" />
+          <p className="card card-pad text-sm text-slate-600">
             This purchase does not exist or was removed.{" "}
-            <Link href="/purchases" className="font-medium text-gray-900 underline">
+            <Link href="/purchases" className="link">
               Back to purchases
             </Link>
           </p>
@@ -61,91 +62,108 @@ export default async function PurchaseDetailPage({ params }) {
   return (
     <AppShell user={shellUser}>
       <div className="space-y-6">
-        <div>
-          <Link href="/purchases" className="text-sm font-medium text-gray-600 hover:text-gray-900">
-            ← All purchases
-          </Link>
-          <h1 className="mt-2 text-2xl font-bold text-gray-900">
-            Purchase from {purchase.supplier.name}
-          </h1>
-          <p className="mt-1 text-sm text-gray-500">
-            {formatDate(purchase.date)}
-            {purchase.invoiceNo ? ` · Invoice ${purchase.invoiceNo}` : ""}
-            {` · Status: ${purchase.status}`}
-          </p>
-        </div>
+        <Link href="/purchases" className="link inline-flex items-center gap-1.5 text-sm">
+          <Icon name="arrowLeft" className="h-4 w-4" />
+          All purchases
+        </Link>
+        <PageHeader
+          title={
+            <>
+              Purchase from {purchase.supplier.name}
+            </>
+          }
+          description={
+            <>
+              {formatDate(purchase.date)}
+              {purchase.invoiceNo ? ` · Invoice ${purchase.invoiceNo}` : ""}
+              {" · Status: "}
+              <Badge
+                tone={
+                  purchase.status === "received"
+                    ? "green"
+                    : purchase.status === "partial" ||
+                        purchase.status === "returned"
+                      ? "amber"
+                      : "slate"
+                }
+              >
+                {purchase.status}
+              </Badge>
+            </>
+          }
+        />
 
-        <div className="grid gap-3 rounded-2xl bg-white p-5 text-sm shadow-sm ring-1 ring-gray-100 sm:grid-cols-2">
+        <dl className="card card-pad grid gap-3 text-sm sm:grid-cols-2">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">Supplier</p>
-            <p className="mt-1 font-medium text-gray-900">{purchase.supplier.name}</p>
+            <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">Supplier</dt>
+            <dd className="mt-1 font-medium text-slate-900">{purchase.supplier.name}</dd>
             {purchase.supplier.company ? (
-              <p className="text-gray-600">{purchase.supplier.company}</p>
+              <dd className="text-slate-600">{purchase.supplier.company}</dd>
             ) : null}
             {purchase.supplier.phone ? (
-              <p className="text-gray-600">{purchase.supplier.phone}</p>
+              <dd className="text-slate-600">{purchase.supplier.phone}</dd>
             ) : null}
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">Recorded by</p>
-            <p className="mt-1 font-medium text-gray-900">{purchase.createdBy.name}</p>
-            <p className="text-gray-600">{formatDate(purchase.createdAt)}</p>
+            <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">Recorded by</dt>
+            <dd className="mt-1 font-medium text-slate-900">{purchase.createdBy.name}</dd>
+            <dd className="text-slate-600">{formatDate(purchase.createdAt)}</dd>
           </div>
-        </div>
+        </dl>
 
-        <div className="overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
-          <table className="w-full text-left text-sm">
+        <div className="table-wrap">
+          <table className="tbl">
             <thead>
-              <tr className="border-b border-gray-100 text-xs uppercase tracking-wide text-gray-500">
-                <th className="px-4 py-3">Medicine</th>
-                <th className="px-4 py-3">Batch</th>
-                <th className="px-4 py-3">Expiry</th>
-                <th className="px-4 py-3 text-right">Qty (units)</th>
-                <th className="px-4 py-3 text-right">Purchase price</th>
-                <th className="px-4 py-3 text-right">Sale price</th>
-                <th className="px-4 py-3 text-right">Total</th>
+              <tr>
+                <th>Medicine</th>
+                <th>Batch</th>
+                <th>Expiry</th>
+                <th className="text-right">Qty (units)</th>
+                <th className="text-right">Purchase price</th>
+                <th className="text-right">Sale price</th>
+                <th className="text-right">Total</th>
               </tr>
             </thead>
             <tbody>
               {purchase.items.map((item) => (
-                <tr key={item.id} className="border-b border-gray-50 last:border-0">
-                  <td className="px-4 py-3 font-medium text-gray-900">{item.medicine.name}</td>
-                  <td className="px-4 py-3 text-gray-600">{item.batchNo}</td>
-                  <td className="px-4 py-3 text-gray-600">{formatDate(item.expiryDate)}</td>
-                  <td className="px-4 py-3 text-right text-gray-900">{item.qtyBaseUnits}</td>
-                  <td className="px-4 py-3 text-right text-gray-600">{formatPKR(item.purchasePrice)}</td>
-                  <td className="px-4 py-3 text-right text-gray-600">{formatPKR(item.salePrice)}</td>
-                  <td className="px-4 py-3 text-right font-medium text-gray-900">{formatPKR(item.total)}</td>
+                <tr key={item.id}>
+                  <td className="font-medium text-slate-900">{item.medicine.name}</td>
+                  <td>{item.batchNo}</td>
+                  <td>{formatDate(item.expiryDate)}</td>
+                  <td className="text-right text-slate-900">{item.qtyBaseUnits}</td>
+                  <td className="text-right">{formatPKR(item.purchasePrice)}</td>
+                  <td className="text-right">{formatPKR(item.salePrice)}</td>
+                  <td className="text-right font-medium text-slate-900">{formatPKR(item.total)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        <div className="ml-auto w-full max-w-xs space-y-1 rounded-2xl bg-white p-5 text-sm shadow-sm ring-1 ring-gray-100">
+        <dl className="card card-pad ml-auto w-full max-w-xs space-y-1 text-sm">
           <div className="flex justify-between">
-            <span className="text-gray-600">Subtotal</span>
-            <span className="font-medium text-gray-900">{formatPKR(purchase.subtotal)}</span>
+            <dt className="text-slate-600">Subtotal</dt>
+            <dd className="font-medium text-slate-900">{formatPKR(purchase.subtotal)}</dd>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Discount</span>
-            <span className="font-medium text-gray-900">− {formatPKR(purchase.discount)}</span>
+            <dt className="text-slate-600">Discount</dt>
+            <dd className="font-medium text-slate-900">− {formatPKR(purchase.discount)}</dd>
           </div>
-          <div className="flex justify-between border-t border-gray-100 pt-1">
-            <span className="font-medium text-gray-900">Total</span>
-            <span className="font-bold text-gray-900">{formatPKR(purchase.total)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Paid</span>
-            <span className="font-medium text-gray-900">{formatPKR(purchase.paid)}</span>
+          <div className="flex justify-between border-t border-slate-100 pt-1">
+            <dt className="font-medium text-slate-900">Total</dt>
+            <dd className="font-bold text-slate-900">{formatPKR(purchase.total)}</dd>
           </div>
           <div className="flex justify-between">
-            <span className="font-medium text-gray-900">Due</span>
-            <span className={`font-bold ${purchase.due > 0 ? "text-red-600" : "text-gray-900"}`}>
+            <dt className="text-slate-600">Paid</dt>
+            <dd className="font-medium text-slate-900">{formatPKR(purchase.paid)}</dd>
+          </div>
+          <div className="flex justify-between">
+            <dt className="font-medium text-slate-900">Due</dt>
+            <dd className={`font-bold ${purchase.due > 0 ? "text-red-600" : "text-slate-900"}`}>
               {formatPKR(purchase.due)}
-            </span>
+            </dd>
           </div>
-        </div>
+        </dl>
       </div>
     </AppShell>
   );
