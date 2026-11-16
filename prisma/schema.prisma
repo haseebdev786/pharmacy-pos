@@ -1,0 +1,364 @@
+// Pharmacy POS — Prisma schema (SQLite, local-first)
+// SAVE AS: pharmacy-pos/prisma/schema.prisma
+// DATABASE_URL="file:./dev.db" in .env creates the file at prisma/dev.db
+// (Prisma resolves a relative SQLite path from this schema folder).
+// Backup = copy prisma/dev.db. Never commit *.db to git.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Better Auth core tables — do NOT rename these fields. Better Auth's
+// Prisma adapter expects exactly these names. Extra app fields (role,
+// isActive) live on User and are declared in lib/auth.js additionalFields.
+// ---------------------------------------------------------------------------
+
+model User {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  // Pharmacy POS fields (server-owned, input: false in lib/auth.js)
+  role     String  @default("cashier") // admin | pharmacist | cashier
+  isActive Boolean @default(true)
+
+  sales            Sale[]
+  purchases        Purchase[]
+  expenses         Expense[]
+  returns          Return[]
+  stockMovements   StockMovement[]
+  customerPayments CustomerPayment[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verification")
+}
+
+// ---------------------------------------------------------------------------
+// Pharmacy domain tables
+// Money: Float in PKR, always through round2() in lib/format.js.
+// Stock: base units (single tablet/capsule/sachet). A strip of 10 = 10 units.
+// ---------------------------------------------------------------------------
+
+model Medicine {
+  id                   String   @id @default(cuid())
+  name                 String
+  genericName          String?
+  manufacturer         String?
+  strength             String? // e.g. "500mg"
+  form                 String // Tablet | Capsule | Syrup | Injection | Cream | Drops | Inhaler | Other
+  category             String?
+  unit                 String   @default("strip") // strip | box | bottle | piece
+  unitsPerStrip        Int      @default(1) // base units in one strip/box (1 = sold per piece)
+  barcode              String?  @unique
+  sku                  String?  @unique
+  reorderLevel         Int      @default(0) // base units; at/below = low stock
+  requiresPrescription Boolean  @default(false)
+  isActive             Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  batches        Batch[]
+  purchaseItems  PurchaseItem[]
+  saleItems      SaleItem[]
+  returnItems    ReturnItem[]
+  stockMovements StockMovement[]
+
+  @@index([name])
+  @@index([genericName])
+}
+
+model Batch {
+  id            String   @id @default(cuid())
+  medicineId    String
+  medicine      Medicine @relation(fields: [medicineId], references: [id])
+  batchNo       String
+  expiryDate    DateTime
+  mfgDate       DateTime?
+  quantity      Int // base units remaining in this batch
+  purchasePrice Float // per base unit
+  salePrice     Float // per base unit
+  supplierId    String?
+  supplier      Supplier? @relation(fields: [supplierId], references: [id])
+  purchaseId    String?
+  purchase      Purchase? @relation(fields: [purchaseId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  purchaseItems  PurchaseItem[]
+  saleItems      SaleItem[]
+  returnItems    ReturnItem[]
+  stockMovements StockMovement[]
+
+  @@unique([medicineId, batchNo])
+  @@index([medicineId, expiryDate]) // FEFO: earliest expiry first
+  @@index([expiryDate])
+}
+
+model Supplier {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String?
+  email     String?
+  address   String?
+  company   String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  batches   Batch[]
+  purchases Purchase[]
+
+  @@index([name])
+}
+
+model Purchase {
+  id          String   @id @default(cuid())
+  supplierId  String
+  supplier    Supplier @relation(fields: [supplierId], references: [id])
+  invoiceNo   String?
+  date        DateTime @default(now())
+  subtotal    Float
+  discount    Float    @default(0)
+  total       Float
+  paid        Float    @default(0)
+  due         Float    @default(0)
+  status      String   @default("received") // received | partial | returned
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items   PurchaseItem[]
+  batches Batch[]
+
+  @@index([supplierId])
+  @@index([date])
+}
+
+model PurchaseItem {
+  id            String   @id @default(cuid())
+  purchaseId    String
+  purchase      Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  medicineId    String
+  medicine      Medicine @relation(fields: [medicineId], references: [id])
+  batchId       String?
+  batch         Batch?   @relation(fields: [batchId], references: [id])
+  batchNo       String
+  expiryDate    DateTime
+  qtyBaseUnits  Int
+  purchasePrice Float // per base unit
+  salePrice     Float // per base unit
+  total         Float
+}
+
+model Sale {
+  id              String   @id @default(cuid())
+  billNo          String   @unique // BILL-0001, sequential, generated on the server only
+  customerId      String?
+  customer        Customer? @relation(fields: [customerId], references: [id])
+  subtotal        Float
+  discount        Float    @default(0)
+  tax             Float    @default(0)
+  grandTotal      Float
+  paymentMethod   String // Cash | Card | Bank | JazzCash | EasyPaisa | Credit
+  amountReceived  Float    @default(0)
+  changeDue       Float    @default(0)
+  creditAmount    Float    @default(0)
+  prescriptionRef String?
+  doctorName      String?
+  cashierId       String
+  cashier         User     @relation(fields: [cashierId], references: [id])
+  status          String   @default("completed") // completed | returned-partial | returned-full | voided
+  voidReason      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  items   SaleItem[]
+  returns Return[]
+
+  @@index([createdAt])
+  @@index([customerId])
+}
+
+model SaleItem {
+  id            String   @id @default(cuid())
+  saleId        String
+  sale          Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  medicineId    String
+  medicine      Medicine @relation(fields: [medicineId], references: [id])
+  batchId       String
+  batch         Batch    @relation(fields: [batchId], references: [id])
+  batchNo       String // snapshot at sale time
+  expiryDate    DateTime // snapshot at sale time
+  qtyBaseUnits  Int
+  qtyDisplay    Float // e.g. 1.5 (strips) as the cashier entered it
+  displayUnit   String // strip | piece | box | bottle
+  unitPrice     Float // per base unit
+  discount      Float    @default(0)
+  total         Float
+  purchasePrice Float // per base unit, for profit reporting
+
+  returnItems ReturnItem[]
+}
+
+model Return {
+  id          String   @id @default(cuid())
+  saleId      String
+  sale        Sale     @relation(fields: [saleId], references: [id])
+  refundTotal Float
+  reason      String
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+
+  items ReturnItem[]
+
+  @@index([saleId])
+}
+
+model ReturnItem {
+  id           String   @id @default(cuid())
+  returnId     String
+  return       Return   @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  saleItemId   String
+  saleItem     SaleItem @relation(fields: [saleItemId], references: [id])
+  medicineId   String
+  medicine     Medicine @relation(fields: [medicineId], references: [id])
+  batchId      String
+  batch        Batch    @relation(fields: [batchId], references: [id])
+  qtyBaseUnits Int
+  refundAmount Float
+}
+
+model Customer {
+  id            String   @id @default(cuid())
+  name          String
+  phone         String?
+  address       String?
+  notes         String?
+  creditBalance Float    @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sales    Sale[]
+  payments CustomerPayment[]
+
+  @@index([phone])
+  @@index([name])
+}
+
+model CustomerPayment {
+  id          String   @id @default(cuid())
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id])
+  saleId      String?
+  amount      Float
+  method      String // Cash | Card | Bank | JazzCash | EasyPaisa
+  note        String?
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@index([customerId])
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  date        DateTime @default(now())
+  category    String // Rent | Salaries | Utilities | Transport | Other
+  amount      Float
+  note        String?
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@index([date])
+}
+
+model StockMovement {
+  id           String   @id @default(cuid())
+  medicineId   String
+  medicine     Medicine @relation(fields: [medicineId], references: [id])
+  batchId      String
+  batch        Batch    @relation(fields: [batchId], references: [id])
+  type         String // purchase | sale | return | adjustment | expired-removal | void-restore
+  qtyChange    Int // +in / -out, base units
+  reason       String?
+  refId        String? // sale / purchase / return id
+  refType      String? // sale | purchase | return | manual
+  createdById  String
+  createdBy    User     @relation(fields: [createdById], references: [id])
+  createdAt    DateTime @default(now())
+
+  @@index([medicineId, createdAt])
+  @@index([batchId])
+}
+
+model Setting {
+  id               Int     @id @default(1) // exactly one row
+  storeName        String  @default("My Pharmacy")
+  address          String?
+  phone            String?
+  currency         String  @default("Rs")
+  taxRate          Float   @default(0) // percent, e.g. 5 = 5%
+  taxEnabled       Boolean @default(false)
+  receiptFooter    String  @default("Thank you! Get well soon.")
+  expiryWarningDays Int    @default(90)
+  creditWarnAt     Float   @default(0) // warn when a customer credit balance passes this; 0 = off
+  updatedAt        DateTime @updatedAt
+}

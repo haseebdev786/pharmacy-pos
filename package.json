@@ -1,0 +1,27 @@
+{
+    "dependencies": {
+        "@prisma/client": "^6",
+        "better-auth": "^1",
+        "next": "^16",
+        "react": "^19",
+        "react-dom": "^19"
+    },
+    "description": "Offline-first Pharmacy POS \u2014 single store, local server on the shop PC, mobile + PC over shop WiFi (LAN). SQLite + Prisma 6 + Better Auth + Next.js.",
+    "devDependencies": {
+        "@tailwindcss/postcss": "^4",
+        "eslint": "^9",
+        "prisma": "^6",
+        "tailwindcss": "^4"
+    },
+    "name": "pharmacy-pos",
+    "private": true,
+    "scripts": {
+        "build": "next build",
+        "db:generate": "prisma generate",
+        "db:migrate": "prisma migrate dev",
+        "dev": "next dev",
+        "seed": "node scripts/seed-pharmacy.mjs",
+        "start": "next start"
+    },
+    "version": "1.0.0"
+}

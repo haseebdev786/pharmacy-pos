@@ -1,0 +1,35 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files — NEVER commit real secrets
+.env
+.env*.local
+
+# typescript (project is JavaScript; kept for safety if tooling adds any)
+*.tsbuildinfo
+next-env.d.ts
+
+# SQLite database — the live pharmacy data. Never commit it.
+# Backup = copy prisma/dev.db while the server is stopped.
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
