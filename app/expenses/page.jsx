@@ -15,7 +15,6 @@ import { getCurrentUser, hasRole } from "@/lib/session";
 import { formatDate, formatPKR, round2 } from "@/lib/format";
 import { PageHeader } from "@/components/ui.jsx";
 
-export const instant = false;
 
 const CATEGORIES = ["Rent", "Salaries", "Utilities", "Transport", "Other"];
 

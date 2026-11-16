@@ -19,7 +19,6 @@ import AppShell from "@/components/AppShell";
 import AdjustmentForm from "@/components/AdjustmentForm";
 import { PageHeader, Badge } from "@/components/ui.jsx";
 
-export const instant = false;
 
 const TABS = [
   { key: "overview", label: "Overview" },

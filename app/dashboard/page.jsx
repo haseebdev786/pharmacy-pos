@@ -10,7 +10,6 @@ import { getCurrentUser, hasRole } from "@/lib/session";
 import { round2, formatPKR, formatDate, daysToExpiry } from "@/lib/format";
 import { StatCard, Badge, Icon } from "@/components/ui.jsx";
 
-export const instant = false;
 
 // Defaults used only when no Setting row exists yet (fresh database).
 // Queried directly from prisma.setting — there is no lib/settings-data.js.

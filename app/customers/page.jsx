@@ -8,7 +8,6 @@ import { formatPKR } from "@/lib/format";
 import CustomerForm from "@/components/CustomerForm";
 import { PageHeader } from "@/components/ui.jsx";
 
-export const instant = false;
 
 export default async function CustomersPage({ searchParams }) {
   const user = await getCurrentUser();

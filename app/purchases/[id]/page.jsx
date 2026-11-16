@@ -7,7 +7,6 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser, hasRole } from "@/lib/session";
 import { formatPKR, formatDate } from "@/lib/format";
 
-export const instant = false;
 
 const PHARMACIST_PLUS = ["admin", "pharmacist"];
 

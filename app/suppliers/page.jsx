@@ -7,7 +7,6 @@ import { formatPKR, round2 } from "@/lib/format";
 import SupplierForm from "@/components/SupplierForm";
 import { PageHeader } from "@/components/ui.jsx";
 
-export const instant = false;
 
 const PHARMACIST_PLUS = ["admin", "pharmacist"];
 

@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import AppShell from "@/components/AppShell";
 
-export const instant = false;
 
 export default async function DashboardLayout({ children }) {
   const user = await getCurrentUser();

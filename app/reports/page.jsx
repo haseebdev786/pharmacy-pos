@@ -27,7 +27,6 @@ import {
   getCashierSales,
 } from "@/lib/reports-data";
 
-export const instant = false;
 
 const DEFAULT_SETTINGS = {
   currency: "Rs",

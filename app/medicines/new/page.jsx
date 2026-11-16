@@ -8,7 +8,6 @@ import MedicineForm from "@/components/MedicineForm";
 import Link from "next/link";
 import { PageHeader, Icon } from "@/components/ui.jsx";
 
-export const instant = false;
 
 export default async function NewMedicinePage() {
   const user = await getCurrentUser();

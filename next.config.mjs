@@ -1,6 +1,7 @@
-// Minimal Next.js config. Do NOT add `cacheComponents: true` here:
-// Next 16 rejects `export const dynamic = "force-dynamic"` under it, and
-// this app uses `export const instant = false` on session/data routes.
+// Minimal Next.js config. `cacheComponents` is intentionally NOT enabled:
+// without it, `export const instant = ...` is an invalid segment config
+// and breaks the build. Pages stay dynamic because they read the session
+// and the database on every request, so no segment config is needed.
 /** @type {import('next').NextConfig} */
 const nextConfig = {};
 

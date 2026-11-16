@@ -11,7 +11,6 @@ import { PageHeader } from "@/components/ui.jsx";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, hasRole } from "@/lib/session";
 
-export const instant = false;
 
 const DEFAULT_SETTINGS = {
   storeName: "My Pharmacy",

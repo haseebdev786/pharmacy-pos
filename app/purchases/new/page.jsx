@@ -7,7 +7,6 @@ import PurchaseForm from "@/components/PurchaseForm";
 import Link from "next/link";
 import { PageHeader, Icon } from "@/components/ui.jsx";
 
-export const instant = false;
 
 const PHARMACIST_PLUS = ["admin", "pharmacist"];
 

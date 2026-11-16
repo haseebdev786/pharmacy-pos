@@ -9,7 +9,6 @@ import { getCurrentUser } from "@/lib/session";
 import { formatPKR, formatDate } from "@/lib/format";
 import { PageHeader, Badge, EmptyState, Icon } from "@/components/ui.jsx";
 
-export const instant = false;
 
 const PAYMENT_METHODS = ["Cash", "Card", "Bank", "JazzCash", "EasyPaisa", "Credit"];
 

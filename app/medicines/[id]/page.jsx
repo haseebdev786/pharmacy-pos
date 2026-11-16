@@ -14,7 +14,6 @@ import MedicineForm from "@/components/MedicineForm";
 import MedicineActions from "@/components/MedicineActions";
 import { Badge, Icon } from "@/components/ui.jsx";
 
-export const instant = false;
 
 function expiryText(expiryDate) {
   const days = daysToExpiry(expiryDate);

@@ -7,7 +7,6 @@ import { getCurrentUser, hasRole } from "@/lib/session";
 import { formatPKR, formatDate } from "@/lib/format";
 import { PageHeader, Badge, Icon } from "@/components/ui.jsx";
 
-export const instant = false;
 
 const PHARMACIST_PLUS = ["admin", "pharmacist"];
 

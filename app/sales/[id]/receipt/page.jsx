@@ -9,7 +9,6 @@ import { Icon } from "@/components/ui.jsx";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 
-export const instant = false;
 
 const SETTING_DEFAULTS = {
   storeName: "My Pharmacy",

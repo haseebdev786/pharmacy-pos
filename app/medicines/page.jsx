@@ -12,7 +12,6 @@ import { formatDate, daysToExpiry } from "@/lib/format";
 import AppShell from "@/components/AppShell";
 import { PageHeader, Badge, EmptyState, Icon } from "@/components/ui.jsx";
 
-export const instant = false;
 
 function expiryStatus(batch, warningDays) {
   if (!batch) return { label: "No stock", className: "bg-slate-100 text-slate-700" };

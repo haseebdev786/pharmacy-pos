@@ -9,7 +9,6 @@ import CustomerForm from "@/components/CustomerForm";
 import CustomerPaymentForm from "@/components/CustomerPaymentForm";
 import { PageHeader, Badge, Icon } from "@/components/ui.jsx";
 
-export const instant = false;
 
 export default async function CustomerDetailPage({ params }) {
   const user = await getCurrentUser();

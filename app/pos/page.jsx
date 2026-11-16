@@ -8,7 +8,6 @@ import PosScreen from "@/components/PosScreen";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 
-export const instant = false;
 
 const SETTING_DEFAULTS = {
   storeName: "My Pharmacy",
