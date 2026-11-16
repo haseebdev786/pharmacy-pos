@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+/* Pharmacy POS — global styles (Tailwind v4). */
+
+/* 80mm thermal receipt: .receipt is the printable area, .no-print is
+   hidden when printing. Print from the receipt page with the Print
+   button (window.print) or Ctrl/Cmd+P. */
+.receipt {
+  width: 80mm;
+  max-width: 100%;
+  margin: 0 auto;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #111;
+  background: #fff;
+}
+
+@media print {
+  body {
+    background: #fff !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .receipt {
+    width: 80mm;
+    margin: 0;
+  }
+  /* NOTE: no global `@page { size: 80mm }` rule on purpose — it would
+     force EVERY printout (including A4 reports) to 80mm. The receipt
+     is constrained by the .receipt width above; thermal printers use
+     their own paper-width setting for the page itself. */
+}
