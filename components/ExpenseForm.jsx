@@ -59,22 +59,22 @@ export default function ExpenseForm() {
     <form onSubmit={handleSubmit} className="space-y-3">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Date</span>
+          <span className="label">Date</span>
           <input
             type="date"
             value={date}
             onChange={(event) => setDate(event.target.value)}
             required
-            className="w-full rounded-lg border border-gray-300 px-3 py-2"
+            className="input"
           />
         </label>
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Category</span>
+          <span className="label">Category</span>
           <select
             value={category}
             onChange={(event) => setCategory(event.target.value)}
             required
-            className="w-full rounded-lg border border-gray-300 px-3 py-2"
+            className="input"
           >
             <option value="">Select category</option>
             {CATEGORIES.map((item) => (
@@ -85,7 +85,7 @@ export default function ExpenseForm() {
           </select>
         </label>
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Amount (Rs)</span>
+          <span className="label">Amount (Rs)</span>
           <input
             type="number"
             inputMode="decimal"
@@ -95,29 +95,29 @@ export default function ExpenseForm() {
             onChange={(event) => setAmount(event.target.value)}
             required
             placeholder="0.00"
-            className="w-full rounded-lg border border-gray-300 px-3 py-2"
+            className="input"
           />
         </label>
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Note (optional)</span>
+          <span className="label">Note (optional)</span>
           <input
             type="text"
             value={note}
             onChange={(event) => setNote(event.target.value)}
             placeholder="e.g. March shop rent"
-            className="w-full rounded-lg border border-gray-300 px-3 py-2"
+            className="input"
           />
         </label>
       </div>
       {error ? (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="form-error">
           {error}
         </p>
       ) : null}
       <button
         type="submit"
         disabled={saving}
-        className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+        className="btn btn-primary"
       >
         {saving ? "Saving..." : "Add expense"}
       </button>

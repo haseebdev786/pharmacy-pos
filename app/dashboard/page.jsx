@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, hasRole } from "@/lib/session";
 import { round2, formatPKR, formatDate, daysToExpiry } from "@/lib/format";
+import { StatCard, Badge, Icon } from "@/components/ui.jsx";
 
 export const instant = false;
 
@@ -228,41 +229,35 @@ export default async function DashboardPage() {
   const has7DaySales = maxDayTotal > 0;
 
   const stats = [
-    { label: "Sales today", value: formatPKR(salesTotalToday, currency) },
-    { label: "Profit today", value: formatPKR(profitToday, currency) },
-    { label: "Bills today", value: String(billsToday) },
-    { label: "Items sold today", value: String(itemsSoldToday) },
-    { label: "Medicines (active)", value: String(medicineCount) },
-    { label: "Total units in stock", value: String(totalUnits) },
+    { label: "Sales today", value: formatPKR(salesTotalToday, currency), icon: "cash", tone: "default" },
+    { label: "Profit today", value: formatPKR(profitToday, currency), icon: "chart", tone: "default" },
+    { label: "Bills today", value: String(billsToday), icon: "receipt", tone: "slate" },
+    { label: "Items sold today", value: String(itemsSoldToday), icon: "package", tone: "slate" },
+    { label: "Medicines (active)", value: String(medicineCount), icon: "pill", tone: "slate" },
+    { label: "Total units in stock", value: String(totalUnits), icon: "archive", tone: "slate" },
   ];
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="page-title">
           Assalam-o-Alaikum, {user.name}
         </h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="page-desc">
           {user.email} · Role:{" "}
-          <span className="font-medium text-gray-900">{user.role}</span>
+          <span className="font-medium text-slate-900">{user.role}</span>
         </p>
-        <div className="mt-3 flex flex-wrap gap-2 text-sm">
-          <Link
-            href="/pos"
-            className="rounded-lg bg-gray-900 px-4 py-2 font-medium text-white hover:bg-gray-700"
-          >
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Link href="/pos" className="btn btn-primary">
+            <Icon name="cart" className="h-4 w-4" />
             Open POS
           </Link>
-          <Link
-            href="/medicines"
-            className="rounded-lg bg-white px-4 py-2 font-medium text-gray-900 ring-1 ring-gray-200 hover:bg-gray-50"
-          >
+          <Link href="/medicines" className="btn btn-secondary">
+            <Icon name="pill" className="h-4 w-4" />
             Medicines
           </Link>
-          <Link
-            href="/inventory"
-            className="rounded-lg bg-white px-4 py-2 font-medium text-gray-900 ring-1 ring-gray-200 hover:bg-gray-50"
-          >
+          <Link href="/inventory" className="btn btn-secondary">
+            <Icon name="archive" className="h-4 w-4" />
             Inventory
           </Link>
         </div>
@@ -270,102 +265,99 @@ export default async function DashboardPage() {
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {stats.map((s) => (
-          <div
+          <StatCard
             key={s.label}
-            className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100"
-          >
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-              {s.label}
-            </p>
-            <p className="mt-1 text-xl font-bold text-gray-900">{s.value}</p>
-          </div>
+            label={s.label}
+            value={s.value}
+            icon={s.icon}
+            tone={s.tone}
+          />
         ))}
       </div>
       {billsToday === 0 && (
-        <p className="text-sm text-gray-500">No sales yet today.</p>
+        <p className="text-sm text-slate-500">No sales yet today.</p>
       )}
 
-      <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-        <h2 className="font-semibold text-gray-900">Sales — last 7 days</h2>
+      <div className="card card-pad">
+        <h2 className="section-title">Sales — last 7 days</h2>
         {has7DaySales ? (
           <div className="mt-4 space-y-3">
             {last7Days.map((d) => (
               <div key={dayKey(d.date)} className="flex items-center gap-3">
-                <p className="w-24 shrink-0 text-sm text-gray-500">
+                <p className="w-24 shrink-0 text-sm text-slate-500">
                   {d.date.toLocaleDateString("en-GB", {
                     weekday: "short",
                     day: "numeric",
                     month: "short",
                   })}
                 </p>
-                <div className="h-4 flex-1 overflow-hidden rounded-full bg-gray-100">
+                <div className="h-4 flex-1 overflow-hidden rounded-full bg-slate-100">
                   <div
-                    className="h-full rounded-full bg-emerald-600"
+                    className="h-full rounded-full bg-brand-600"
                     style={{
                       width: `${maxDayTotal > 0 ? (d.total / maxDayTotal) * 100 : 0}%`,
                     }}
                   />
                 </div>
-                <p className="w-28 shrink-0 text-right text-sm font-medium text-gray-900">
+                <p className="w-28 shrink-0 text-right text-sm font-medium text-slate-900">
                   {formatPKR(d.total, currency)}
                 </p>
               </div>
             ))}
           </div>
         ) : (
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-slate-500">
             No sales in the last 7 days.
           </p>
         )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-          <h2 className="font-semibold text-gray-900">Low stock</h2>
+        <div className="card card-pad">
+          <h2 className="section-title">Low stock</h2>
           {lowStock.length === 0 ? (
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-slate-500">
               No low-stock medicines. All active medicines are above their
               reorder level.
             </p>
           ) : (
-            <ul className="mt-3 divide-y divide-gray-100">
+            <ul className="mt-3 divide-y divide-slate-100">
               {lowStock.map((m) => (
                 <li key={m.id} className="flex items-center justify-between gap-3 py-2">
                   <Link
                     href={`/medicines/${m.id}`}
-                    className="text-sm font-medium text-gray-900 hover:underline"
+                    className="text-sm font-medium text-slate-900 hover:underline"
                   >
                     {m.name}
                     {m.strength ? ` ${m.strength}` : ""}
                   </Link>
-                  <p className="shrink-0 text-sm text-gray-500">
-                    {m.totalStock === 0
-                      ? "Out of stock"
-                      : `${m.totalStock} units left`}{" "}
-                    · reorder at {m.reorderLevel}
+                  <p className="flex shrink-0 flex-wrap items-center justify-end gap-1.5 text-sm text-slate-500">
+                    {m.totalStock === 0 ? (
+                      <Badge tone="red">Out of stock</Badge>
+                    ) : (
+                      <span>{`${m.totalStock} units left`}</span>
+                    )}
+                    <span>· reorder at {m.reorderLevel}</span>
                   </p>
                 </li>
               ))}
             </ul>
           )}
-          <Link
-            href="/inventory"
-            className="mt-3 inline-block text-sm font-medium text-gray-900 hover:underline"
-          >
+          <Link href="/inventory" className="link mt-3 inline-block text-sm">
             View inventory
           </Link>
         </div>
 
-        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-          <h2 className="font-semibold text-gray-900">
+        <div className="card card-pad">
+          <h2 className="section-title">
             Expiring soon (next {settings.expiryWarningDays} days)
           </h2>
           {expiringBatches.length === 0 ? (
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-slate-500">
               No batches expiring in the next {settings.expiryWarningDays} days.
             </p>
           ) : (
-            <ul className="mt-3 divide-y divide-gray-100">
+            <ul className="mt-3 divide-y divide-slate-100">
               {expiringBatches.map((b) => {
                 const days = daysToExpiry(b.expiryDate);
                 return (
@@ -373,43 +365,40 @@ export default async function DashboardPage() {
                     <div>
                       <Link
                         href={`/medicines/${b.medicine.id}`}
-                        className="text-sm font-medium text-gray-900 hover:underline"
+                        className="text-sm font-medium text-slate-900 hover:underline"
                       >
                         {b.medicine.name}
                         {b.medicine.strength ? ` ${b.medicine.strength}` : ""}
                       </Link>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-slate-500">
                         Batch {b.batchNo} · {b.quantity} units · expires{" "}
                         {formatDate(b.expiryDate)}
                       </p>
                     </div>
-                    <p className="shrink-0 text-sm font-medium text-amber-700">
+                    <Badge tone="amber" className="shrink-0">
                       {days === 0 ? "Expires today" : `${days} days left`}
-                    </p>
+                    </Badge>
                   </li>
                 );
               })}
             </ul>
           )}
-          <Link
-            href="/inventory"
-            className="mt-3 inline-block text-sm font-medium text-gray-900 hover:underline"
-          >
+          <Link href="/inventory" className="link mt-3 inline-block text-sm">
             View inventory
           </Link>
         </div>
 
-        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-          <h2 className="font-semibold text-gray-900">Expired stock</h2>
-          <p className="mt-1 text-xs text-gray-500">
+        <div className="card card-pad">
+          <h2 className="section-title">Expired stock</h2>
+          <p className="section-desc">
             Expired stock must never be sold.
           </p>
           {expiredBatches.length === 0 ? (
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-slate-500">
               No expired stock with quantity on hand.
             </p>
           ) : (
-            <ul className="mt-3 divide-y divide-gray-100">
+            <ul className="mt-3 divide-y divide-slate-100">
               {expiredBatches.map((b) => {
                 const days = daysToExpiry(b.expiryDate);
                 return (
@@ -417,46 +406,43 @@ export default async function DashboardPage() {
                     <div>
                       <Link
                         href={`/medicines/${b.medicine.id}`}
-                        className="text-sm font-medium text-gray-900 hover:underline"
+                        className="text-sm font-medium text-slate-900 hover:underline"
                       >
                         {b.medicine.name}
                         {b.medicine.strength ? ` ${b.medicine.strength}` : ""}
                       </Link>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-slate-500">
                         Batch {b.batchNo} · {b.quantity} units · expired{" "}
                         {formatDate(b.expiryDate)}
                       </p>
                     </div>
-                    <p className="shrink-0 text-sm font-medium text-red-700">
+                    <Badge tone="red" className="shrink-0">
                       Expired {days !== null ? `${Math.abs(days)} days ago` : ""}
-                    </p>
+                    </Badge>
                   </li>
                 );
               })}
             </ul>
           )}
-          <Link
-            href="/inventory"
-            className="mt-3 inline-block text-sm font-medium text-gray-900 hover:underline"
-          >
+          <Link href="/inventory" className="link mt-3 inline-block text-sm">
             View inventory
           </Link>
         </div>
 
-        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-          <h2 className="font-semibold text-gray-900">
+        <div className="card card-pad">
+          <h2 className="section-title">
             Top-selling medicines (last 30 days)
           </h2>
           {topSelling.length === 0 ? (
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-slate-500">
               No sales in the last 30 days.
             </p>
           ) : (
-            <ul className="mt-3 divide-y divide-gray-100">
+            <ul className="mt-3 divide-y divide-slate-100">
               {topSelling.map((m, i) => (
                 <li key={m.medicineId} className="flex items-center justify-between gap-3 py-2">
-                  <p className="text-sm text-gray-900">
-                    <span className="mr-2 text-gray-400">{i + 1}.</span>
+                  <p className="text-sm text-slate-900">
+                    <span className="mr-2 text-slate-400">{i + 1}.</span>
                     <Link
                       href={`/medicines/${m.medicineId}`}
                       className="font-medium hover:underline"
@@ -464,7 +450,7 @@ export default async function DashboardPage() {
                       {m.name}
                     </Link>
                   </p>
-                  <p className="shrink-0 text-sm text-gray-500">
+                  <p className="shrink-0 text-sm text-slate-500">
                     {m.qty} units sold
                   </p>
                 </li>
@@ -474,31 +460,39 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-        <h2 className="font-semibold text-gray-900">Recent sales</h2>
+      <div className="card card-pad">
+        <h2 className="section-title">Recent sales</h2>
         {recentSales.length === 0 ? (
-          <p className="mt-2 text-sm text-gray-500">No sales yet.</p>
+          <p className="mt-2 text-sm text-slate-500">No sales yet.</p>
         ) : (
-          <ul className="mt-3 divide-y divide-gray-100">
+          <ul className="mt-3 divide-y divide-slate-100">
             {recentSales.map((s) => (
               <li key={s.id} className="flex flex-wrap items-center justify-between gap-3 py-2">
                 <div>
                   <Link
                     href={`/sales/${s.id}`}
-                    className="text-sm font-medium text-gray-900 hover:underline"
+                    className="text-sm font-medium text-slate-900 hover:underline"
                   >
                     {s.billNo}
                   </Link>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-slate-500">
                     {s.customer?.name ?? "Walk-in"} · {s.cashier?.name ?? "-"} ·{" "}
                     {formatDate(s.createdAt)}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700">
+                  <Badge
+                    tone={
+                      s.status === "voided"
+                        ? "red"
+                        : s.status === "completed"
+                          ? "green"
+                          : "amber"
+                    }
+                  >
                     {s.status}
-                  </span>
-                  <p className="text-sm font-medium text-gray-900">
+                  </Badge>
+                  <p className="text-sm font-medium text-slate-900">
                     {formatPKR(s.grandTotal, currency)}
                   </p>
                 </div>
@@ -506,10 +500,7 @@ export default async function DashboardPage() {
             ))}
           </ul>
         )}
-        <Link
-          href="/sales"
-          className="mt-3 inline-block text-sm font-medium text-gray-900 hover:underline"
-        >
+        <Link href="/sales" className="link mt-3 inline-block text-sm">
           View all sales
         </Link>
       </div>

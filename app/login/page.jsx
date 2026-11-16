@@ -5,6 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { Icon } from "@/components/ui.jsx";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,14 +32,19 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow">
-        <h1 className="text-xl font-bold text-gray-900">Pharmacy POS</h1>
-        <p className="mt-1 text-sm text-gray-500">Sign in to the counter.</p>
+    <main className="flex min-h-dvh items-center justify-center bg-slate-100 px-4">
+      <div className="card w-full max-w-sm border-t-4 border-brand-600 p-6">
+        <div className="flex items-center gap-3">
+          <span className="icon-chip">
+            <Icon name="pill" className="h-5 w-5" />
+          </span>
+          <h1 className="text-xl font-bold text-slate-900">Pharmacy POS</h1>
+        </div>
+        <p className="mt-3 text-sm text-slate-500">Sign in to the counter.</p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
-            <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="label">
               Email
             </label>
             <input
@@ -48,13 +54,13 @@ export default function LoginPage() {
               autoComplete="username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+              className="input"
               placeholder="owner@pharmacy.pk"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="label">
               Password
             </label>
             <input
@@ -64,27 +70,27 @@ export default function LoginPage() {
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+              className="input"
               placeholder="••••••••"
             />
           </div>
 
           {error ? (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+            <p className="form-error">{error}</p>
           ) : null}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-50"
+            className="btn btn-primary btn-block"
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-500">
+        <p className="mt-4 text-center text-sm text-slate-500">
           First time here?{" "}
-          <Link href="/signup" className="font-medium text-gray-900 underline">
+          <Link href="/signup" className="link">
             Create the first account
           </Link>{" "}
           — it becomes Admin automatically.

@@ -9,6 +9,7 @@ import { redirect } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import ReturnForm from "@/components/ReturnForm";
 import VoidSaleButton from "@/components/VoidSaleButton";
+import { PageHeader, Badge, Icon } from "@/components/ui.jsx";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, hasRole } from "@/lib/session";
 import { formatPKR, formatDate } from "@/lib/format";
@@ -56,10 +57,11 @@ export default async function SaleDetailPage({ params }) {
     return (
       <AppShell user={shellUser}>
         <div className="space-y-6">
-          <p className="rounded-2xl bg-white p-5 text-sm text-gray-500 shadow-sm ring-1 ring-gray-100">
+          <p className="card card-pad text-sm text-slate-500">
             Sale not found.
           </p>
-          <Link href="/sales" className="text-sm font-medium text-blue-600 hover:underline">
+          <Link href="/sales" className="link inline-flex items-center gap-1.5 text-sm">
+            <Icon name="arrowLeft" className="h-4 w-4" />
             Back to sales
           </Link>
         </div>
@@ -71,10 +73,11 @@ export default async function SaleDetailPage({ params }) {
     return (
       <AppShell user={shellUser}>
         <div className="space-y-6">
-          <p className="rounded-2xl bg-white p-5 text-sm font-medium text-red-600 shadow-sm ring-1 ring-gray-100">
+          <p className="card card-pad text-sm font-medium text-red-600">
             Access denied: cashiers can only view their own sales.
           </p>
-          <Link href="/sales" className="text-sm font-medium text-blue-600 hover:underline">
+          <Link href="/sales" className="link inline-flex items-center gap-1.5 text-sm">
+            <Icon name="arrowLeft" className="h-4 w-4" />
             Back to sales
           </Link>
         </div>
@@ -125,103 +128,152 @@ export default async function SaleDetailPage({ params }) {
   return (
     <AppShell user={shellUser}>
       <div className="space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Bill {sale.billNo}</h1>
-            <p className="mt-1 text-sm text-gray-500">
+        <Link href="/sales" className="link inline-flex items-center gap-1.5 text-sm">
+          <Icon name="arrowLeft" className="h-4 w-4" />
+          Back to sales
+        </Link>
+        <PageHeader
+          title={
+            <>
+              Bill {sale.billNo}
+            </>
+          }
+          description={
+            <>
               {formatDate(sale.createdAt)} · Status:{" "}
-              <span className="font-medium text-gray-900">{sale.status}</span>
-            </p>
-          </div>
-          <Link
-            href={`/sales/${sale.id}/receipt`}
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
-          >
-            View / print receipt
-          </Link>
-        </div>
+              <Badge
+                tone={
+                  sale.status === "voided"
+                    ? "red"
+                    : sale.status === "completed"
+                      ? "green"
+                      : "amber"
+                }
+              >
+                {sale.status}
+              </Badge>
+            </>
+          }
+          actions={
+            <Link
+              href={`/sales/${sale.id}/receipt`}
+              target="_blank"
+              rel="noreferrer"
+              className="btn btn-secondary"
+            >
+              <Icon name="printer" className="h-4 w-4" />
+              View / print receipt
+            </Link>
+          }
+        />
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-2xl bg-white p-4 text-sm shadow-sm ring-1 ring-gray-100">
-            <h2 className="font-semibold text-gray-900">Customer</h2>
-            <p className="mt-1">{sale.customer?.name || "Walk-in"}</p>
-            {sale.customer?.phone && <p className="text-gray-500">{sale.customer.phone}</p>}
+          <div className="card card-pad text-sm">
+            <h2 className="section-title">Customer</h2>
+            <p className="mt-3 font-medium text-slate-900">{sale.customer?.name || "Walk-in"}</p>
+            {sale.customer?.phone && <p className="text-slate-500">{sale.customer.phone}</p>}
             {sale.prescriptionRef && (
-              <p className="mt-2 text-gray-500">Prescription ref: {sale.prescriptionRef}</p>
+              <p className="mt-2 text-slate-500">Prescription ref: {sale.prescriptionRef}</p>
             )}
-            {sale.doctorName && <p className="text-gray-500">Doctor: {sale.doctorName}</p>}
+            {sale.doctorName && <p className="text-slate-500">Doctor: {sale.doctorName}</p>}
           </div>
-          <div className="rounded-2xl bg-white p-4 text-sm shadow-sm ring-1 ring-gray-100">
-            <h2 className="font-semibold text-gray-900">Payment</h2>
-            <p className="mt-1">Method: {sale.paymentMethod}</p>
-            <p className="text-gray-500">Cashier: {sale.cashier?.name || "-"}</p>
-            <p className="text-gray-500">
-              Received: {formatPKR(sale.amountReceived, currency)} · Change:{" "}
-              {formatPKR(sale.changeDue, currency)}
-            </p>
-            {sale.creditAmount > 0 && (
-              <p className="text-gray-500">Credit (Udhaar): {formatPKR(sale.creditAmount, currency)}</p>
-            )}
-            {sale.voidReason && (
-              <p className="mt-2 font-medium text-red-600">Void reason: {sale.voidReason}</p>
-            )}
+          <div className="card card-pad text-sm">
+            <h2 className="section-title">Payment</h2>
+            <dl className="mt-3 space-y-1">
+              <div className="flex justify-between gap-3">
+                <dt className="text-slate-500">Method:</dt>
+                <dd className="text-slate-900">{sale.paymentMethod}</dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-slate-500">Cashier:</dt>
+                <dd className="text-slate-900">{sale.cashier?.name || "-"}</dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-slate-500">Received:</dt>
+                <dd className="text-slate-900">{formatPKR(sale.amountReceived, currency)}</dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-slate-500">Change:</dt>
+                <dd className="text-slate-900">{formatPKR(sale.changeDue, currency)}</dd>
+              </div>
+              {sale.creditAmount > 0 && (
+                <div className="flex justify-between gap-3">
+                  <dt className="text-slate-500">Credit (Udhaar):</dt>
+                  <dd className="text-slate-900">{formatPKR(sale.creditAmount, currency)}</dd>
+                </div>
+              )}
+              {sale.voidReason && (
+                <div className="flex justify-between gap-3">
+                  <dt className="font-medium text-red-600">Void reason:</dt>
+                  <dd className="font-medium text-red-600">{sale.voidReason}</dd>
+                </div>
+              )}
+            </dl>
           </div>
         </div>
 
-        <div className="overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
-          <table className="w-full min-w-[640px] text-sm">
+        <div className="table-wrap">
+          <table className="tbl min-w-[640px]">
             <thead>
-              <tr className="border-b border-gray-100 text-left text-gray-500">
-                <th className="px-4 py-3 font-medium">Medicine</th>
-                <th className="px-4 py-3 font-medium">Batch</th>
-                <th className="px-4 py-3 font-medium">Expiry</th>
-                <th className="px-4 py-3 font-medium">Qty</th>
-                <th className="px-4 py-3 text-right font-medium">Price</th>
-                <th className="px-4 py-3 text-right font-medium">Discount</th>
-                <th className="px-4 py-3 text-right font-medium">Total</th>
-                <th className="px-4 py-3 font-medium">Returned</th>
+              <tr>
+                <th>Medicine</th>
+                <th>Batch</th>
+                <th>Expiry</th>
+                <th>Qty</th>
+                <th className="text-right">Price</th>
+                <th className="text-right">Discount</th>
+                <th className="text-right">Total</th>
+                <th>Returned</th>
               </tr>
             </thead>
             <tbody>
               {sale.items.map((item) => (
-                <tr key={item.id} className="border-b border-gray-50 last:border-0">
-                  <td className="px-4 py-3 font-medium text-gray-900">{item.medicine.name}</td>
-                  <td className="px-4 py-3">{item.batchNo}</td>
-                  <td className="px-4 py-3">{formatDate(item.expiryDate)}</td>
-                  <td className="px-4 py-3">
+                <tr key={item.id}>
+                  <td className="font-medium text-slate-900">{item.medicine.name}</td>
+                  <td>{item.batchNo}</td>
+                  <td>{formatDate(item.expiryDate)}</td>
+                  <td>
                     {item.qtyDisplay} {item.displayUnit} ({item.qtyBaseUnits} unit(s))
                   </td>
-                  <td className="px-4 py-3 text-right">{formatPKR(item.unitPrice, currency)}/unit</td>
-                  <td className="px-4 py-3 text-right">{formatPKR(item.discount, currency)}</td>
-                  <td className="px-4 py-3 text-right">{formatPKR(item.total, currency)}</td>
-                  <td className="px-4 py-3">{returnedByItem.get(item.id) || 0} unit(s)</td>
+                  <td className="text-right">{formatPKR(item.unitPrice, currency)}/unit</td>
+                  <td className="text-right">{formatPKR(item.discount, currency)}</td>
+                  <td className="text-right">{formatPKR(item.total, currency)}</td>
+                  <td>{returnedByItem.get(item.id) || 0} unit(s)</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <div className="space-y-1 px-4 py-3 text-right text-sm">
-            <p>Subtotal: {formatPKR(sale.subtotal, currency)}</p>
-            <p>Bill discount: {formatPKR(sale.discount, currency)}</p>
-            <p>Tax: {formatPKR(sale.tax, currency)}</p>
-            <p className="text-base font-semibold">
-              Grand total: {formatPKR(sale.grandTotal, currency)}
-            </p>
-          </div>
         </div>
+        <dl className="card card-pad ml-auto w-full max-w-xs space-y-1 text-sm">
+          <div className="flex justify-between gap-3">
+            <dt className="text-slate-500">Subtotal:</dt>
+            <dd className="text-slate-900">{formatPKR(sale.subtotal, currency)}</dd>
+          </div>
+          <div className="flex justify-between gap-3">
+            <dt className="text-slate-500">Bill discount:</dt>
+            <dd className="text-slate-900">{formatPKR(sale.discount, currency)}</dd>
+          </div>
+          <div className="flex justify-between gap-3">
+            <dt className="text-slate-500">Tax:</dt>
+            <dd className="text-slate-900">{formatPKR(sale.tax, currency)}</dd>
+          </div>
+          <div className="flex justify-between gap-3 text-base font-semibold">
+            <dt className="text-slate-900">Grand total:</dt>
+            <dd className="text-slate-900">{formatPKR(sale.grandTotal, currency)}</dd>
+          </div>
+        </dl>
 
         {sale.returns.length > 0 && (
-          <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100">
-            <h2 className="font-semibold text-gray-900">Returns</h2>
-            <ul className="mt-2 space-y-3">
+          <div className="card card-pad">
+            <h2 className="section-title">Returns</h2>
+            <ul className="mt-3 space-y-3">
               {sale.returns.map((ret) => (
-                <li key={ret.id} className="border-b border-gray-100 pb-3 text-sm last:border-0 last:pb-0">
+                <li key={ret.id} className="border-b border-slate-100 pb-3 text-sm last:border-0 last:pb-0">
                   <p>
                     {formatDate(ret.createdAt)} · {ret.reason} · Refund{" "}
                     {formatPKR(ret.refundTotal, currency)} · by {ret.createdBy?.name || "-"}
                   </p>
-                  <ul className="mt-1 list-disc pl-5 text-gray-500">
+                  <ul className="mt-1 list-disc pl-5 text-slate-500">
                     {ret.items.map((ri) => (
                       <li key={ri.id}>
                         {ri.medicine.name} (batch {ri.batch.batchNo}): {ri.qtyBaseUnits} unit(s) ·{" "}
@@ -239,10 +291,6 @@ export default async function SaleDetailPage({ params }) {
         {canVoid && (
           <VoidSaleButton saleId={sale.id} billNo={sale.billNo} isVoided={sale.status === "voided"} />
         )}
-
-        <Link href="/sales" className="inline-block text-sm font-medium text-blue-600 hover:underline">
-          Back to sales
-        </Link>
       </div>
     </AppShell>
   );

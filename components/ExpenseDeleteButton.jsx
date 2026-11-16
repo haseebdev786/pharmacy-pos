@@ -42,12 +42,12 @@ export default function ExpenseDeleteButton({ expenseId }) {
         type="button"
         onClick={handleDelete}
         disabled={deleting}
-        className="rounded-lg border border-red-200 px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+        className="btn btn-danger-outline btn-sm"
       >
         {deleting ? "Deleting..." : "Delete"}
       </button>
       {error ? (
-        <span role="alert" className="text-xs text-red-600">
+        <span role="alert" className="field-error text-xs">
           {error}
         </span>
       ) : null}

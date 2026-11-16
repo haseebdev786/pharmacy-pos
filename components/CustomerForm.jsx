@@ -65,14 +65,13 @@ export default function CustomerForm({ customer }) {
     }
   }
 
-  const inputClass =
-    "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900";
+  const inputClass = "input";
 
   return (
     <form onSubmit={handleSubmit} className="mt-4 space-y-3">
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="block text-sm">
-          <span className="font-medium text-gray-900">Name *</span>
+          <span className="label">Name *</span>
           <input
             className={inputClass}
             value={values.name}
@@ -82,7 +81,7 @@ export default function CustomerForm({ customer }) {
           />
         </label>
         <label className="block text-sm">
-          <span className="font-medium text-gray-900">Phone</span>
+          <span className="label">Phone</span>
           <input
             className={inputClass}
             value={values.phone}
@@ -91,7 +90,7 @@ export default function CustomerForm({ customer }) {
           />
         </label>
         <label className="block text-sm sm:col-span-2">
-          <span className="font-medium text-gray-900">Address</span>
+          <span className="label">Address</span>
           <input
             className={inputClass}
             value={values.address}
@@ -100,7 +99,7 @@ export default function CustomerForm({ customer }) {
           />
         </label>
         <label className="block text-sm sm:col-span-2">
-          <span className="font-medium text-gray-900">Notes</span>
+          <span className="label">Notes</span>
           <textarea
             className={inputClass}
             rows={2}
@@ -112,7 +111,7 @@ export default function CustomerForm({ customer }) {
       </div>
 
       {error ? (
-        <p role="alert" className="text-sm font-medium text-red-600">
+        <p role="alert" className="form-error">
           {error}
         </p>
       ) : null}
@@ -125,7 +124,7 @@ export default function CustomerForm({ customer }) {
       <button
         type="submit"
         disabled={saving}
-        className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-50"
+        className="btn btn-primary"
       >
         {saving ? "Saving…" : isEdit ? "Save changes" : "Add customer"}
       </button>

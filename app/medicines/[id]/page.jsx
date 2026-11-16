@@ -12,6 +12,7 @@ import { formatPKR, formatDate, daysToExpiry } from "@/lib/format";
 import AppShell from "@/components/AppShell";
 import MedicineForm from "@/components/MedicineForm";
 import MedicineActions from "@/components/MedicineActions";
+import { Badge, Icon } from "@/components/ui.jsx";
 
 export const instant = false;
 
@@ -44,14 +45,14 @@ export default async function MedicineDetailPage({ params }) {
     return (
       <AppShell user={shellUser}>
         <div className="space-y-6">
-          <h1 className="text-2xl font-bold text-gray-900">Medicine not found</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="page-title">Medicine not found</h1>
+          <p className="page-desc">
             There is no medicine with this id. It may have been removed, or
             the link is wrong.
           </p>
           <Link
             href="/medicines"
-            className="inline-block rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-900 ring-1 ring-gray-300"
+            className="btn btn-secondary"
           >
             Back to medicines
           </Link>
@@ -111,32 +112,21 @@ export default async function MedicineDetailPage({ params }) {
       <div className="space-y-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <Link href="/medicines" className="text-sm text-gray-500 hover:underline">
+            <Link href="/medicines" className="link inline-flex items-center gap-1.5 text-sm">
+              <Icon name="arrowLeft" className="h-4 w-4" />
               Back to medicines
             </Link>
-            <h1 className="mt-1 text-2xl font-bold text-gray-900">{medicine.name}</h1>
+            <h1 className="page-title mt-1">{medicine.name}</h1>
             <p className="mt-1 flex flex-wrap gap-2">
-              <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
-                {medicine.form}
-              </span>
+              <Badge tone="slate">{medicine.form}</Badge>
               {medicine.requiresPrescription ? (
-                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
-                  Prescription required
-                </span>
+                <Badge tone="amber">Prescription required</Badge>
               ) : null}
-              <span
-                className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                  medicine.isActive
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
-                }`}
-              >
+              <Badge tone={medicine.isActive ? "green" : "red"}>
                 {medicine.isActive ? "Active" : "Inactive"}
-              </span>
+              </Badge>
               {totalStock <= medicine.reorderLevel ? (
-                <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
-                  Low stock
-                </span>
+                <Badge tone="red">Low stock</Badge>
               ) : null}
             </p>
           </div>
@@ -145,52 +135,52 @@ export default async function MedicineDetailPage({ params }) {
           ) : null}
         </div>
 
-        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-          <h2 className="font-semibold text-gray-900">Details</h2>
+        <div className="card card-pad">
+          <h2 className="section-title">Details</h2>
           <dl className="mt-3 grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
             {details.map(([label, value]) => (
               <div key={label}>
-                <dt className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
                   {label}
                 </dt>
-                <dd className="mt-0.5 text-sm text-gray-900">{value}</dd>
+                <dd className="mt-0.5 text-sm text-slate-900">{value}</dd>
               </div>
             ))}
           </dl>
         </div>
 
-        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-          <h2 className="font-semibold text-gray-900">Batches</h2>
+        <div className="card card-pad">
+          <h2 className="section-title">Batches</h2>
           {medicine.batches.length === 0 ? (
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-slate-500">
               No batches yet. Batches arrive with purchases, or can be added
               through the batches API.
             </p>
           ) : (
-            <div className="mt-3 overflow-x-auto">
-              <table className="w-full text-sm">
+            <div className="table-wrap mt-3">
+              <table className="tbl">
                 <thead>
-                  <tr className="border-b border-gray-100 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
-                    <th className="px-2 py-2">Batch</th>
-                    <th className="px-2 py-2">Expiry</th>
-                    <th className="px-2 py-2">Quantity</th>
-                    <th className="px-2 py-2">Purchase price</th>
-                    <th className="px-2 py-2">Sale price</th>
-                    <th className="px-2 py-2">Supplier</th>
+                  <tr>
+                    <th>Batch</th>
+                    <th>Expiry</th>
+                    <th>Quantity</th>
+                    <th>Purchase price</th>
+                    <th>Sale price</th>
+                    <th>Supplier</th>
                   </tr>
                 </thead>
                 <tbody>
                   {medicine.batches.map((b) => (
-                    <tr key={b.id} className="border-b border-gray-50 last:border-0">
-                      <td className="px-2 py-2 font-medium text-gray-900">{b.batchNo}</td>
-                      <td className="px-2 py-2 text-gray-700">
+                    <tr key={b.id}>
+                      <td className="font-medium text-slate-900">{b.batchNo}</td>
+                      <td className="text-slate-700">
                         {formatDate(b.expiryDate)}{" "}
-                        <span className="text-xs text-gray-500">({expiryText(b.expiryDate)})</span>
+                        <span className="text-xs text-slate-500">({expiryText(b.expiryDate)})</span>
                       </td>
-                      <td className="px-2 py-2 text-gray-700">{b.quantity}</td>
-                      <td className="px-2 py-2 text-gray-700">{formatPKR(b.purchasePrice)}</td>
-                      <td className="px-2 py-2 text-gray-700">{formatPKR(b.salePrice)}</td>
-                      <td className="px-2 py-2 text-gray-700">{b.supplier?.name || "—"}</td>
+                      <td className="text-slate-700">{b.quantity}</td>
+                      <td className="text-slate-700">{formatPKR(b.purchasePrice)}</td>
+                      <td className="text-slate-700">{formatPKR(b.salePrice)}</td>
+                      <td className="text-slate-700">{b.supplier?.name || "—"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -201,23 +191,23 @@ export default async function MedicineDetailPage({ params }) {
 
         {canManage ? (
           <div>
-            <h2 className="mb-3 text-lg font-semibold text-gray-900">Edit medicine</h2>
+            <h2 className="section-title mb-3 text-lg">Edit medicine</h2>
             <MedicineForm medicine={formMedicine} onCancelHref={`/medicines/${medicine.id}`} />
           </div>
         ) : null}
 
-        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-          <h2 className="font-semibold text-gray-900">Recent stock movements</h2>
+        <div className="card card-pad">
+          <h2 className="section-title">Recent stock movements</h2>
           {movements.length === 0 ? (
-            <p className="mt-2 text-sm text-gray-500">No stock movements yet.</p>
+            <p className="mt-2 text-sm text-slate-500">No stock movements yet.</p>
           ) : (
             <ul className="mt-3 space-y-2">
               {movements.map((mv) => (
                 <li
                   key={mv.id}
-                  className="flex flex-wrap items-baseline justify-between gap-2 border-b border-gray-50 pb-2 text-sm last:border-0 last:pb-0"
+                  className="flex flex-wrap items-baseline justify-between gap-2 border-b border-slate-50 pb-2 text-sm last:border-0 last:pb-0"
                 >
-                  <span className="text-gray-700">
+                  <span className="text-slate-700">
                     <span
                       className={`font-medium ${
                         mv.qtyChange >= 0 ? "text-green-700" : "text-red-600"
@@ -226,9 +216,9 @@ export default async function MedicineDetailPage({ params }) {
                       {mv.qtyChange >= 0 ? `+${mv.qtyChange}` : mv.qtyChange}
                     </span>{" "}
                     {mv.type} · batch {mv.batch?.batchNo || "—"}
-                    {mv.reason ? <span className="text-gray-500"> · {mv.reason}</span> : null}
+                    {mv.reason ? <span className="text-slate-500"> · {mv.reason}</span> : null}
                   </span>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-slate-500">
                     {formatDate(mv.createdAt)} · {mv.createdBy?.name || "—"}
                   </span>
                 </li>

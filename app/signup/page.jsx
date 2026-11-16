@@ -5,6 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { Icon } from "@/components/ui.jsx";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -33,17 +34,23 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow">
-        <h1 className="text-xl font-bold text-gray-900">Create account</h1>
-        <p className="mt-1 text-sm text-gray-500">
+    <main className="flex min-h-dvh items-center justify-center bg-slate-100 px-4">
+      <div className="card w-full max-w-sm border-t-4 border-brand-600 p-6">
+        <div className="flex items-center gap-3">
+          <span className="icon-chip">
+            <Icon name="pill" className="h-5 w-5" />
+          </span>
+          <p className="text-lg font-bold text-slate-900">Pharmacy POS</p>
+        </div>
+        <h1 className="mt-4 text-xl font-bold text-slate-900">Create account</h1>
+        <p className="mt-1 text-sm text-slate-500">
           The first account in a fresh database becomes Admin. Later accounts
           start as Cashier until an Admin promotes them.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
-            <label htmlFor="name" className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="name" className="label">
               Full name
             </label>
             <input
@@ -53,13 +60,13 @@ export default function SignupPage() {
               autoComplete="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+              className="input"
               placeholder="Haseeb Maqsood"
             />
           </div>
 
           <div>
-            <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="label">
               Email
             </label>
             <input
@@ -69,13 +76,13 @@ export default function SignupPage() {
               autoComplete="username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+              className="input"
               placeholder="owner@pharmacy.pk"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="label">
               Password (min 6 characters)
             </label>
             <input
@@ -86,27 +93,27 @@ export default function SignupPage() {
               autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+              className="input"
               placeholder="••••••••"
             />
           </div>
 
           {error ? (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+            <p className="form-error">{error}</p>
           ) : null}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-50"
+            className="btn btn-primary btn-block"
           >
             {loading ? "Creating…" : "Create account"}
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-500">
+        <p className="mt-4 text-center text-sm text-slate-500">
           Already have an account?{" "}
-          <Link href="/login" className="font-medium text-gray-900 underline">
+          <Link href="/login" className="link">
             Sign in
           </Link>
         </p>

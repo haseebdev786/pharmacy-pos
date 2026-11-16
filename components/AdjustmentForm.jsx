@@ -63,7 +63,7 @@ export default function AdjustmentForm({ batchId, batchNo, currentQuantity, medi
         step="1"
         value={newQuantity}
         onChange={(e) => setNewQuantity(e.target.value)}
-        className="w-20 rounded-lg bg-white px-2 py-1.5 text-sm text-gray-900 ring-1 ring-gray-300"
+        className="input input-sm w-20"
       />
       <label className="sr-only" htmlFor={`reason-${batchId}`}>
         Reason
@@ -74,17 +74,17 @@ export default function AdjustmentForm({ batchId, batchNo, currentQuantity, medi
         value={reason}
         onChange={(e) => setReason(e.target.value)}
         placeholder="Reason (required)"
-        className="w-44 rounded-lg bg-white px-2 py-1.5 text-sm text-gray-900 ring-1 ring-gray-300"
+        className="input input-sm w-44"
       />
       <button
         type="submit"
         disabled={saving}
-        className="rounded-lg bg-gray-900 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+        className="btn btn-primary btn-sm"
       >
         Save
       </button>
       {error ? (
-        <span role="alert" className="text-xs text-red-600">
+        <span role="alert" className="field-error text-xs">
           {error}
         </span>
       ) : null}

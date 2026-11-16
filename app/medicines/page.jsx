@@ -10,19 +10,20 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser, hasRole } from "@/lib/session";
 import { formatDate, daysToExpiry } from "@/lib/format";
 import AppShell from "@/components/AppShell";
+import { PageHeader, Badge, EmptyState, Icon } from "@/components/ui.jsx";
 
 export const instant = false;
 
 function expiryStatus(batch, warningDays) {
-  if (!batch) return { label: "No stock", className: "bg-gray-100 text-gray-600" };
+  if (!batch) return { label: "No stock", className: "bg-slate-100 text-slate-700" };
   const days = daysToExpiry(batch.expiryDate);
   if (days < 0) {
     return { label: "Expired", className: "bg-red-100 text-red-700" };
   }
   if (days <= warningDays) {
-    return { label: "Expiring soon", className: "bg-amber-100 text-amber-700" };
+    return { label: "Expiring soon", className: "bg-amber-100 text-amber-800" };
   }
-  return { label: "OK", className: "bg-green-100 text-green-700" };
+  return { label: "OK", className: "bg-green-100 text-green-800" };
 }
 
 export default async function MedicinesPage({ searchParams }) {
@@ -87,10 +88,10 @@ export default async function MedicinesPage({ searchParams }) {
   return (
     <AppShell user={{ name: user.name, email: user.email, role: user.role }}>
       <div className="space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Medicines</h1>
-            <p className="mt-1 text-sm text-gray-500">
+        <PageHeader
+          title="Medicines"
+          description={
+            <>
               {rows.length} {rows.length === 1 ? "medicine" : "medicines"}
               {term ? (
                 <>
@@ -98,17 +99,17 @@ export default async function MedicinesPage({ searchParams }) {
                   matching &ldquo;{term}&rdquo;
                 </>
               ) : null}
-            </p>
-          </div>
-          {canManage ? (
-            <Link
-              href="/medicines/new"
-              className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white"
-            >
-              Add medicine
-            </Link>
-          ) : null}
-        </div>
+            </>
+          }
+          actions={
+            canManage ? (
+              <Link href="/medicines/new" className="btn btn-primary">
+                <Icon name="plus" className="h-4 w-4" />
+                Add medicine
+              </Link>
+            ) : null
+          }
+        />
 
         <form method="get" className="flex flex-wrap gap-2">
           <input
@@ -116,18 +117,18 @@ export default async function MedicinesPage({ searchParams }) {
             name="q"
             defaultValue={term}
             placeholder="Search name, generic, barcode, SKU"
-            className="w-full max-w-md rounded-lg bg-white px-3 py-2 text-sm text-gray-900 ring-1 ring-gray-300"
+            className="input max-w-md"
           />
           <button
             type="submit"
-            className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-900 ring-1 ring-gray-300"
+            className="btn btn-secondary"
           >
             Search
           </button>
           {term ? (
             <Link
               href="/medicines"
-              className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-900 ring-1 ring-gray-300"
+              className="btn btn-secondary"
             >
               Clear
             </Link>
@@ -135,72 +136,73 @@ export default async function MedicinesPage({ searchParams }) {
         </form>
 
         {rows.length === 0 ? (
-          <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-            <p className="text-sm text-gray-500">
-              {term
+          <EmptyState
+            icon="pill"
+            title={
+              term
                 ? "No medicines match this search."
-                : "No medicines yet. Add your first medicine to start building stock."}
-            </p>
-            {!term && canManage ? (
-              <Link
-                href="/medicines/new"
-                className="mt-3 inline-block rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white"
-              >
-                Add medicine
-              </Link>
-            ) : null}
-          </div>
+                : "No medicines yet. Add your first medicine to start building stock."
+            }
+            action={
+              !term && canManage ? (
+                <Link href="/medicines/new" className="btn btn-primary">
+                  <Icon name="plus" className="h-4 w-4" />
+                  Add medicine
+                </Link>
+              ) : null
+            }
+          />
         ) : (
-          <div className="overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
-            <table className="w-full text-sm">
+          <div className="table-wrap">
+            <table className="tbl">
               <thead>
-                <tr className="border-b border-gray-100 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
-                  <th className="px-4 py-3">Medicine</th>
-                  <th className="px-4 py-3">Form</th>
-                  <th className="px-4 py-3">Total stock</th>
-                  <th className="px-4 py-3">Reorder level</th>
-                  <th className="px-4 py-3">Soonest expiry</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Active</th>
+                <tr>
+                  <th>Medicine</th>
+                  <th>Form</th>
+                  <th>Total stock</th>
+                  <th>Reorder level</th>
+                  <th>Soonest expiry</th>
+                  <th>Status</th>
+                  <th>Active</th>
                 </tr>
               </thead>
               <tbody>
                 {rows.map((m) => (
-                  <tr key={m.id} className="border-b border-gray-50 last:border-0">
-                    <td className="px-4 py-3">
+                  <tr key={m.id}>
+                    <td>
                       <Link
                         href={`/medicines/${m.id}`}
-                        className="font-medium text-gray-900 underline-offset-2 hover:underline"
+                        className="font-medium text-slate-900 underline-offset-2 hover:underline"
                       >
                         {m.name}
                       </Link>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-slate-500">
                         {[m.genericName, m.strength].filter(Boolean).join(" · ") || "—"}
                       </p>
                     </td>
-                    <td className="px-4 py-3 text-gray-700">{m.form}</td>
-                    <td className="px-4 py-3">
-                      <span className={m.lowStock ? "font-semibold text-red-600" : "text-gray-900"}>
+                    <td className="text-slate-700">{m.form}</td>
+                    <td>
+                      <span className={m.lowStock ? "font-semibold text-red-600" : "text-slate-900"}>
                         {m.totalStock}
                       </span>
                       {m.lowStock ? (
-                        <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
+                        <Badge tone="red" className="ml-2">
                           Low
-                        </span>
+                        </Badge>
                       ) : null}
                     </td>
-                    <td className="px-4 py-3 text-gray-700">{m.reorderLevel}</td>
-                    <td className="px-4 py-3 text-gray-700">
+                    <td className="text-slate-700">{m.reorderLevel}</td>
+                    <td className="text-slate-700">
                       {m.soonest ? formatDate(m.soonest.expiryDate) : "—"}
                     </td>
-                    <td className="px-4 py-3">
+                    <td>
                       <span
                         className={`rounded-full px-2 py-0.5 text-xs font-medium ${m.status.className}`}
                       >
                         {m.status.label}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-700">
+                    <td className="text-slate-700">
                       {m.isActive ? "Yes" : "No"}
                     </td>
                   </tr>

@@ -9,6 +9,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { round2, formatPKR, daysToExpiry } from "@/lib/format";
+import { PageHeader, Icon, Badge } from "@/components/ui.jsx";
 
 const PAYMENT_METHODS = ["Cash", "Card", "Bank", "JazzCash", "EasyPaisa", "Credit"];
 
@@ -394,45 +395,54 @@ export default function PosScreen({ user, settings }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-gray-900">POS Billing</h1>
-        <button
-          type="button"
-          onClick={() => setCart([])}
-          className="rounded-lg bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-gray-200 hover:bg-gray-50"
-        >
-          Clear cart
-        </button>
-      </div>
+      <PageHeader
+        title="POS Billing"
+        actions={
+          <button
+            type="button"
+            onClick={() => setCart([])}
+            className="btn btn-secondary btn-sm"
+          >
+            <Icon name="x" className="h-4 w-4" />
+            Clear cart
+          </button>
+        }
+      />
 
-      {error && (
-        <div className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-700 ring-1 ring-red-200">
-          {error}
-        </div>
-      )}
+      {error && <div className="form-error">{error}</div>}
 
       {lastSale && (
-        <div className="rounded-lg bg-green-50 px-4 py-4 text-sm text-green-800 ring-1 ring-green-200">
-          <p className="text-base font-semibold">Bill {lastSale.billNo} saved.</p>
-          <p className="mt-1">
-            Change due: {formatPKR(lastSale.changeDue, settings.currency)}
-          </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <a
-              href={`/sales/${lastSale.id}/receipt`}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-lg bg-green-600 px-3 py-2 font-medium text-white hover:bg-green-700"
-            >
-              Print receipt
-            </a>
-            <button
-              type="button"
-              onClick={newBill}
-              className="rounded-lg bg-white px-3 py-2 font-medium text-green-800 ring-1 ring-green-300 hover:bg-green-100"
-            >
-              New bill
-            </button>
+        <div className="card card-pad">
+          <div className="flex items-start gap-3">
+            <span className="icon-chip">
+              <Icon name="check" className="h-5 w-5" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-base font-semibold text-slate-900">
+                Bill {lastSale.billNo} saved.
+              </p>
+              <p className="mt-1 text-sm text-slate-600">
+                Change due: {formatPKR(lastSale.changeDue, settings.currency)}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <a
+                  href={`/sales/${lastSale.id}/receipt`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn btn-primary btn-sm"
+                >
+                  <Icon name="printer" className="h-4 w-4" />
+                  Print receipt
+                </a>
+                <button
+                  type="button"
+                  onClick={newBill}
+                  className="btn btn-secondary btn-sm"
+                >
+                  New bill
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -440,8 +450,8 @@ export default function PosScreen({ user, settings }) {
       <div className="grid items-start gap-4 lg:grid-cols-2">
         {/* ---- Left: search + results + customer ---- */}
         <div className="space-y-4">
-          <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100">
-            <label htmlFor="pos-search" className="text-sm font-semibold text-gray-900">
+          <div className="card card-pad">
+            <label htmlFor="pos-search" className="label">
               Search medicine (name, generic, barcode)
             </label>
             <input
@@ -453,13 +463,13 @@ export default function PosScreen({ user, settings }) {
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleSearchKeyDown}
               placeholder="Type name or scan barcode, then Enter"
-              className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-base outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="input mt-1"
             />
-            {searching && <p className="mt-2 text-xs text-gray-500">Searching…</p>}
+            {searching && <p className="mt-2 text-xs text-slate-500">Searching…</p>}
             {query.trim() && !searching && results.length === 0 && (
-              <p className="mt-2 text-sm text-gray-500">No medicines found.</p>
+              <p className="mt-2 text-sm text-slate-500">No medicines found.</p>
             )}
-            <ul className="mt-2 divide-y divide-gray-100">
+            <ul className="mt-2 divide-y divide-slate-100">
               {results.map((m) => {
                 const fefo = pickFefo(m);
                 const days = fefo ? daysToExpiry(fefo.expiryDate) : null;
@@ -475,23 +485,23 @@ export default function PosScreen({ user, settings }) {
                       type="button"
                       onClick={() => addMedicine(m)}
                       disabled={!fefo}
-                      className="flex w-full items-start justify-between gap-3 px-1 py-2 text-left hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="flex w-full items-start justify-between gap-3 rounded-xl px-3 py-3 text-left hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       <span>
-                        <span className="block font-medium text-gray-900">
+                        <span className="block font-medium text-slate-900">
                           {m.name}
                           {m.requiresPrescription ? (
-                            <span className="ml-2 rounded bg-amber-100 px-1.5 py-0.5 text-xs font-semibold text-amber-800">
+                            <Badge tone="amber" className="ml-2">
                               Rx
-                            </span>
+                            </Badge>
                           ) : null}
                         </span>
-                        <span className="block text-xs text-gray-500">
+                        <span className="block text-xs text-slate-500">
                           {[m.genericName, m.strength, m.manufacturer].filter(Boolean).join(" · ")}
                           {m.totalStock !== undefined ? ` · Stock: ${m.totalStock}` : ""}
                         </span>
                         {fefo ? (
-                          <span className="block text-xs text-gray-500">
+                          <span className="block text-xs text-slate-500">
                             Batch {fefo.batchNo} · {formatPKR(fefo.salePrice, settings.currency)}/unit
                             {perPack !== null
                               ? ` (${formatPKR(perPack, settings.currency)}/${m.unit})`
@@ -502,7 +512,7 @@ export default function PosScreen({ user, settings }) {
                       <span className="shrink-0 text-right">
                         {fefo ? (
                           <>
-                            <span className="block rounded-lg bg-blue-600 px-3 py-1 text-sm font-medium text-white">
+                            <span className="btn btn-primary btn-sm">
                               Add
                             </span>
                             {nearExpiry && (
@@ -524,13 +534,13 @@ export default function PosScreen({ user, settings }) {
             </ul>
           </div>
 
-          <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100">
-            <h2 className="text-sm font-semibold text-gray-900">Customer</h2>
+          <div className="card card-pad">
+            <h2 className="text-sm font-semibold text-slate-900">Customer</h2>
             {customer ? (
               <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <p className="font-medium text-gray-900">{customer.name}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="font-medium text-slate-900">{customer.name}</p>
+                  <p className="text-xs text-slate-500">
                     {[customer.phone, customer.address].filter(Boolean).join(" · ")}
                     {` · Credit: ${formatPKR(customer.creditBalance || 0, settings.currency)}`}
                   </p>
@@ -538,23 +548,23 @@ export default function PosScreen({ user, settings }) {
                 <button
                   type="button"
                   onClick={() => setCustomer(null)}
-                  className="rounded-lg bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
+                  className="btn btn-secondary btn-sm"
                 >
                   Walk-in
                 </button>
               </div>
             ) : (
               <>
-                <p className="mt-1 text-xs text-gray-500">Walk-in customer (default).</p>
+                <p className="mt-1 text-xs text-slate-500">Walk-in customer (default).</p>
                 <input
                   type="text"
                   value={customerQuery}
                   onChange={(e) => setCustomerQuery(e.target.value)}
                   placeholder="Search customer by name or phone"
-                  className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="input mt-2"
                 />
                 {customerResults.length > 0 && (
-                  <ul className="mt-1 divide-y divide-gray-100 rounded-lg ring-1 ring-gray-200">
+                  <ul className="mt-1 divide-y divide-slate-100 rounded-lg ring-1 ring-slate-200">
                     {customerResults.map((c) => (
                       <li key={c.id}>
                         <button
@@ -564,15 +574,15 @@ export default function PosScreen({ user, settings }) {
                             setCustomerQuery("");
                             setCustomerResults([]);
                           }}
-                          className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm hover:bg-gray-50"
+                          className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-sm hover:bg-slate-50"
                         >
                           <span>
-                            <span className="font-medium text-gray-900">{c.name}</span>
+                            <span className="font-medium text-slate-900">{c.name}</span>
                             {c.phone ? (
-                              <span className="text-gray-500"> · {c.phone}</span>
+                              <span className="text-slate-500"> · {c.phone}</span>
                             ) : null}
                           </span>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-slate-500">
                             Credit: {formatPKR(c.creditBalance || 0, settings.currency)}
                           </span>
                         </button>
@@ -583,40 +593,55 @@ export default function PosScreen({ user, settings }) {
                 <button
                   type="button"
                   onClick={() => setShowQuickAdd((v) => !v)}
-                  className="mt-2 text-sm font-medium text-blue-600 hover:underline"
+                  className="link mt-2 text-sm"
                 >
                   {showQuickAdd ? "Hide quick-add" : "+ Add new customer"}
                 </button>
                 {showQuickAdd && (
-                  <form onSubmit={quickAddCustomer} className="mt-2 space-y-2">
-                    <input
-                      type="text"
-                      value={quickAdd.name}
-                      onChange={(e) => setQuickAdd({ ...quickAdd, name: e.target.value })}
-                      placeholder="Name (required)"
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                    />
-                    <input
-                      type="text"
-                      value={quickAdd.phone}
-                      onChange={(e) => setQuickAdd({ ...quickAdd, phone: e.target.value })}
-                      placeholder="Phone (optional)"
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                    />
-                    <input
-                      type="text"
-                      value={quickAdd.address}
-                      onChange={(e) => setQuickAdd({ ...quickAdd, address: e.target.value })}
-                      placeholder="Address (optional)"
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                    />
+                  <form onSubmit={quickAddCustomer} className="mt-3 space-y-3">
+                    <div>
+                      <label htmlFor="pos-qa-name" className="label">
+                        Name (required)
+                      </label>
+                      <input
+                        id="pos-qa-name"
+                        type="text"
+                        value={quickAdd.name}
+                        onChange={(e) => setQuickAdd({ ...quickAdd, name: e.target.value })}
+                        placeholder="Name (required)"
+                        className="input"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="pos-qa-phone" className="label">
+                        Phone (optional)
+                      </label>
+                      <input
+                        id="pos-qa-phone"
+                        type="text"
+                        value={quickAdd.phone}
+                        onChange={(e) => setQuickAdd({ ...quickAdd, phone: e.target.value })}
+                        placeholder="Phone (optional)"
+                        className="input"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="pos-qa-address" className="label">
+                        Address (optional)
+                      </label>
+                      <input
+                        id="pos-qa-address"
+                        type="text"
+                        value={quickAdd.address}
+                        onChange={(e) => setQuickAdd({ ...quickAdd, address: e.target.value })}
+                        placeholder="Address (optional)"
+                        className="input"
+                      />
+                    </div>
                     {quickAddError && (
-                      <p className="text-sm font-medium text-red-600">{quickAddError}</p>
+                      <p className="form-error">{quickAddError}</p>
                     )}
-                    <button
-                      type="submit"
-                      className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
-                    >
+                    <button type="submit" className="btn btn-primary btn-sm">
                       Save & select customer
                     </button>
                   </form>
@@ -626,7 +651,7 @@ export default function PosScreen({ user, settings }) {
 
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
               <div>
-                <label htmlFor="pos-rx" className="text-xs font-medium text-gray-500">
+                <label htmlFor="pos-rx" className="label">
                   Prescription ref (optional)
                 </label>
                 <input
@@ -634,11 +659,11 @@ export default function PosScreen({ user, settings }) {
                   type="text"
                   value={prescriptionRef}
                   onChange={(e) => setPrescriptionRef(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="input"
                 />
               </div>
               <div>
-                <label htmlFor="pos-doctor" className="text-xs font-medium text-gray-500">
+                <label htmlFor="pos-doctor" className="label">
                   Doctor name (optional)
                 </label>
                 <input
@@ -646,7 +671,7 @@ export default function PosScreen({ user, settings }) {
                   type="text"
                   value={doctorName}
                   onChange={(e) => setDoctorName(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="input"
                 />
               </div>
             </div>
@@ -654,11 +679,11 @@ export default function PosScreen({ user, settings }) {
         </div>
 
         {/* ---- Right: cart + totals + payment ---- */}
-        <div className="space-y-4">
-          <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100">
-            <h2 className="text-sm font-semibold text-gray-900">Cart</h2>
+        <div className="space-y-4 lg:sticky lg:top-20">
+          <div className="card card-pad">
+            <h2 className="text-sm font-semibold text-slate-900">Cart</h2>
             {cart.length === 0 ? (
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-2 text-sm text-slate-500">
                 Cart is empty. Search a medicine and press Enter to add it.
               </p>
             ) : (
@@ -668,17 +693,17 @@ export default function PosScreen({ user, settings }) {
                   const nearExpiry =
                     days !== null && days <= Number(settings.expiryWarningDays);
                   return (
-                    <li key={line.key} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                    <li key={line.key} className="border-b border-slate-100 pb-4 last:border-0 last:pb-0">
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <p className="font-medium text-gray-900">{line.medicineName}</p>
+                          <p className="font-medium text-slate-900">{line.medicineName}</p>
                           {canOverrideBatch ? (
-                            <label className="mt-1 block text-xs text-gray-500">
+                            <label className="mt-1 block text-xs text-slate-500">
                               Batch
                               <select
                                 value={line.batchId}
                                 onChange={(e) => changeBatch(line, e.target.value)}
-                                className="ml-2 rounded border border-gray-300 px-1.5 py-1 text-xs outline-none"
+                                className="input input-sm ml-2 w-auto"
                               >
                                 {line.batches.map((b) => (
                                   <option key={b.id} value={b.id}>
@@ -688,7 +713,7 @@ export default function PosScreen({ user, settings }) {
                               </select>
                             </label>
                           ) : (
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-slate-500">
                               Batch {line.batchNo} · Exp{" "}
                               {new Date(line.expiryDate).toLocaleDateString("en-GB")}
                             </p>
@@ -702,27 +727,27 @@ export default function PosScreen({ user, settings }) {
                         <button
                           type="button"
                           onClick={() => removeLine(line.key)}
-                          className="text-sm font-medium text-red-600 hover:underline"
+                          className="shrink-0 text-sm font-medium text-red-600 hover:underline"
                         >
                           Remove
                         </button>
                       </div>
                       <div className="mt-2 flex flex-wrap items-end gap-2">
-                        <label className="text-xs text-gray-500">
+                        <label className="text-xs text-slate-500">
                           Qty
                           <input
                             type="text"
                             inputMode="decimal"
                             value={line.qtyDisplay}
                             onChange={(e) => updateLine(line.key, { qtyDisplay: e.target.value })}
-                            className="ml-1 w-20 rounded-lg border border-gray-300 px-2 py-1.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            className="input input-sm ml-1 w-20"
                           />
                         </label>
                         <select
                           aria-label="Unit"
                           value={line.displayUnit}
                           onChange={(e) => updateLine(line.key, { displayUnit: e.target.value })}
-                          className="rounded-lg border border-gray-300 px-2 py-1.5 text-sm outline-none"
+                          className="input input-sm w-auto"
                         >
                           {unitOptions(line).map((u) => (
                             <option key={u} value={u}>
@@ -730,25 +755,25 @@ export default function PosScreen({ user, settings }) {
                             </option>
                           ))}
                         </select>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-slate-500">
                           = {qty !== null ? `${qty} unit(s)` : "—"} ·{" "}
                           {formatPKR(line.unitPrice, settings.currency)}/unit
                         </span>
-                        <label className="ml-auto text-xs text-gray-500">
+                        <label className="ml-auto text-xs text-slate-500">
                           Discount (Rs)
                           <input
                             type="text"
                             inputMode="decimal"
                             value={line.discount}
                             onChange={(e) => updateLine(line.key, { discount: e.target.value })}
-                            className="ml-1 w-24 rounded-lg border border-gray-300 px-2 py-1.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            className="input input-sm ml-1 w-24"
                           />
                         </label>
                       </div>
                       {err ? (
-                        <p className="mt-1 text-sm font-medium text-red-600">{err}</p>
+                        <p className="field-error">{err}</p>
                       ) : (
-                        <p className="mt-1 text-sm text-gray-700">
+                        <p className="mt-1 text-sm text-slate-700">
                           {formatPKR(gross, settings.currency)}
                           {Number(line.discount) > 0
                             ? ` − ${formatPKR(line.discount, settings.currency)} discount`
@@ -763,28 +788,28 @@ export default function PosScreen({ user, settings }) {
             )}
           </div>
 
-          <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100">
-            <h2 className="text-sm font-semibold text-gray-900">Bill totals</h2>
+          <div className="card card-pad">
+            <h2 className="text-sm font-semibold text-slate-900">Bill totals</h2>
             <div className="mt-2 space-y-1 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-500">Subtotal</span>
+                <span className="text-slate-500">Subtotal</span>
                 <span>{formatPKR(subtotal, settings.currency)}</span>
               </div>
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-gray-500">Bill discount</span>
+                <span className="text-slate-500">Bill discount</span>
                 <span className="flex items-center gap-2">
                   <input
                     type="text"
                     inputMode="decimal"
                     value={discountInput}
                     onChange={(e) => setDiscountInput(e.target.value)}
-                    className="w-24 rounded-lg border border-gray-300 px-2 py-1.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    className="input input-sm w-24"
                   />
                   <select
                     aria-label="Discount type"
                     value={discountType}
                     onChange={(e) => setDiscountType(e.target.value)}
-                    className="rounded-lg border border-gray-300 px-2 py-1.5 text-sm outline-none"
+                    className="input input-sm w-auto"
                   >
                     <option value="amount">Rs</option>
                     <option value="percent">%</option>
@@ -793,64 +818,64 @@ export default function PosScreen({ user, settings }) {
                 </span>
               </div>
               {discountError && (
-                <p className="text-right text-sm font-medium text-red-600">{discountError}</p>
+                <p className="field-error text-right">{discountError}</p>
               )}
               {settings.taxEnabled && (
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Tax ({settings.taxRate}%)</span>
+                  <span className="text-slate-500">Tax ({settings.taxRate}%)</span>
                   <span>{formatPKR(tax, settings.currency)}</span>
                 </div>
               )}
-              <div className="flex justify-between border-t border-gray-100 pt-2 text-base font-semibold">
+              <div className="flex justify-between border-t border-slate-200 pt-3 text-xl font-bold text-slate-900">
                 <span>Grand total</span>
                 <span>{formatPKR(grandTotal, settings.currency)}</span>
               </div>
             </div>
 
             <div className="mt-4 space-y-3">
-              <label className="block text-sm">
-                <span className="font-medium text-gray-900">Payment method</span>
-                <select
-                  value={paymentMethod}
-                  onChange={(e) => handlePaymentChange(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                >
+              <div>
+                <span className="label">Payment method</span>
+                <div className="flex flex-wrap gap-2">
                   {PAYMENT_METHODS.map((m) => (
-                    <option key={m} value={m}>
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => handlePaymentChange(m)}
+                      aria-pressed={paymentMethod === m}
+                      className={paymentMethod === m ? "pill pill-active" : "pill"}
+                    >
                       {m === "Credit" ? "Credit (Udhaar)" : m}
-                    </option>
+                    </button>
                   ))}
-                </select>
-              </label>
+                </div>
+              </div>
 
               {paymentMethod !== "Credit" && (
                 <>
-                  <label className="block text-sm">
-                    <span className="font-medium text-gray-900">Amount received</span>
+                  <label className="label">
+                    Amount received
                     <input
                       type="text"
                       inputMode="decimal"
                       value={amountReceived}
                       onChange={(e) => setAmountReceived(e.target.value)}
                       placeholder={String(grandTotal)}
-                      className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      className="input mt-1"
                     />
                   </label>
-                  <p className="text-sm text-gray-700">
-                    {receivedValid && received >= grandTotal ? (
-                      <>
-                        Change due:{" "}
-                        <span className="font-semibold">{formatPKR(changeDue, settings.currency)}</span>
-                      </>
-                    ) : (
-                      <>
-                        Still due:{" "}
-                        <span className="font-semibold">
-                          {formatPKR(round2(grandTotal - (receivedValid ? received : 0)), settings.currency)}
-                        </span>
-                      </>
-                    )}
-                  </p>
+                  {receivedValid && received >= grandTotal ? (
+                    <p className="rounded-xl bg-emerald-50 px-3 py-2.5 text-sm font-medium text-emerald-800 ring-1 ring-emerald-200">
+                      Change due:{" "}
+                      <span className="font-semibold">{formatPKR(changeDue, settings.currency)}</span>
+                    </p>
+                  ) : (
+                    <p className="text-sm text-slate-700">
+                      Still due:{" "}
+                      <span className="font-semibold">
+                        {formatPKR(round2(grandTotal - (receivedValid ? received : 0)), settings.currency)}
+                      </span>
+                    </p>
+                  )}
                 </>
               )}
 
@@ -872,12 +897,12 @@ export default function PosScreen({ user, settings }) {
                 type="button"
                 onClick={submitBill}
                 disabled={!canSubmit}
-                className="w-full rounded-lg bg-blue-600 px-4 py-3 text-base font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+                className="btn btn-primary btn-lg btn-block"
               >
                 {submitting ? "Saving…" : `Save bill · ${formatPKR(grandTotal, settings.currency)}`}
               </button>
-              <p className="text-center text-xs text-gray-500">
-                <Link href="/sales" className="font-medium text-blue-600 hover:underline">
+              <p className="text-center text-xs text-slate-500">
+                <Link href="/sales" className="link">
                   View sales history
                 </Link>
               </p>

@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { getCurrentUser, hasRole } from "@/lib/session";
 import AppShell from "@/components/AppShell";
 import MedicineForm from "@/components/MedicineForm";
+import Link from "next/link";
+import { PageHeader, Icon } from "@/components/ui.jsx";
 
 export const instant = false;
 
@@ -18,10 +20,10 @@ export default async function NewMedicinePage() {
     return (
       <AppShell user={shellUser}>
         <div className="space-y-6">
-          <h1 className="text-2xl font-bold text-gray-900">Access denied</h1>
-          <p className="text-sm text-gray-500">
-            Only pharmacists and admins can add medicines.
-          </p>
+          <PageHeader
+            title="Access denied"
+            description="Only pharmacists and admins can add medicines."
+          />
         </div>
       </AppShell>
     );
@@ -30,7 +32,11 @@ export default async function NewMedicinePage() {
   return (
     <AppShell user={shellUser}>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900">Add medicine</h1>
+        <Link href="/medicines" className="link inline-flex items-center gap-1.5 text-sm">
+          <Icon name="arrowLeft" className="h-4 w-4" />
+          Back to medicines
+        </Link>
+        <PageHeader title="Add medicine" />
         <MedicineForm medicine={null} onCancelHref="/medicines" />
       </div>
     </AppShell>

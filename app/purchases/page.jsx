@@ -5,6 +5,7 @@ import AppShell from "@/components/AppShell";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, hasRole } from "@/lib/session";
 import { formatPKR, formatDate } from "@/lib/format";
+import { PageHeader, Badge, Icon } from "@/components/ui.jsx";
 
 export const instant = false;
 
@@ -20,8 +21,8 @@ export default async function PurchasesPage({ searchParams }) {
     return (
       <AppShell user={shellUser}>
         <div className="space-y-6">
-          <h1 className="text-2xl font-bold text-gray-900">Purchases</h1>
-          <p className="rounded-2xl bg-white p-5 text-sm text-gray-600 shadow-sm ring-1 ring-gray-100">
+          <PageHeader title="Purchases" />
+          <p className="card card-pad text-sm text-slate-600">
             Access denied. Only pharmacists and admins can view purchases.
           </p>
         </div>
@@ -68,31 +69,27 @@ export default async function PurchasesPage({ searchParams }) {
   return (
     <AppShell user={shellUser}>
       <div className="space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Purchases</h1>
-            <p className="mt-1 text-sm text-gray-500">
-              Goods-received notes: stock received, what was paid, what is due.
-            </p>
-          </div>
-          <Link
-            href="/purchases/new"
-            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
-          >
-            New purchase
-          </Link>
-        </div>
+        <PageHeader
+          title="Purchases"
+          description="Goods-received notes: stock received, what was paid, what is due."
+          actions={
+            <Link href="/purchases/new" className="btn btn-primary">
+              <Icon name="plus" className="h-4 w-4" />
+              New purchase
+            </Link>
+          }
+        />
 
         <form
           method="get"
-          className="flex flex-wrap items-end gap-2 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100"
+          className="card card-pad flex flex-wrap items-end gap-2"
         >
           <label className="block text-sm">
-            <span className="font-medium text-gray-900">Supplier</span>
+            <span className="label">Supplier</span>
             <select
               name="supplierId"
               defaultValue={supplierId}
-              className="mt-1 block rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+              className="input"
             >
               <option value="">All suppliers</option>
               {suppliers.map((s) => (
@@ -103,33 +100,33 @@ export default async function PurchasesPage({ searchParams }) {
             </select>
           </label>
           <label className="block text-sm">
-            <span className="font-medium text-gray-900">From</span>
+            <span className="label">From</span>
             <input
               type="date"
               name="from"
               defaultValue={from}
-              className="mt-1 block rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+              className="input"
             />
           </label>
           <label className="block text-sm">
-            <span className="font-medium text-gray-900">To</span>
+            <span className="label">To</span>
             <input
               type="date"
               name="to"
               defaultValue={to}
-              className="mt-1 block rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+              className="input"
             />
           </label>
           <button
             type="submit"
-            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
+            className="btn btn-secondary"
           >
             Filter
           </button>
           {hasFilter ? (
             <a
               href="/purchases"
-              className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900"
+              className="btn btn-secondary"
             >
               Clear
             </a>
@@ -137,50 +134,54 @@ export default async function PurchasesPage({ searchParams }) {
         </form>
 
         {purchases.length === 0 ? (
-          <p className="rounded-2xl bg-white p-5 text-sm text-gray-600 shadow-sm ring-1 ring-gray-100">
+          <p className="card card-pad text-sm text-slate-600">
             {hasFilter
               ? "No purchases match these filters."
               : "No purchases yet. Record your first goods-received note."}
           </p>
         ) : (
-          <div className="overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
-            <table className="w-full text-left text-sm">
+          <div className="table-wrap">
+            <table className="tbl">
               <thead>
-                <tr className="border-b border-gray-100 text-xs uppercase tracking-wide text-gray-500">
-                  <th className="px-4 py-3">Date</th>
-                  <th className="px-4 py-3">Supplier</th>
-                  <th className="px-4 py-3">Invoice</th>
-                  <th className="px-4 py-3 text-right">Total</th>
-                  <th className="px-4 py-3 text-right">Paid</th>
-                  <th className="px-4 py-3 text-right">Due</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3 text-right">Items</th>
+                <tr>
+                  <th>Date</th>
+                  <th>Supplier</th>
+                  <th>Invoice</th>
+                  <th className="text-right">Total</th>
+                  <th className="text-right">Paid</th>
+                  <th className="text-right">Due</th>
+                  <th>Status</th>
+                  <th className="text-right">Items</th>
                 </tr>
               </thead>
               <tbody>
                 {purchases.map((p) => (
-                  <tr key={p.id} className="border-b border-gray-50 last:border-0">
-                    <td className="px-4 py-3">
+                  <tr key={p.id}>
+                    <td>
                       <Link
                         href={`/purchases/${p.id}`}
-                        className="font-medium text-gray-900 underline-offset-2 hover:underline"
+                        className="font-medium text-slate-900 underline-offset-2 hover:underline"
                       >
                         {formatDate(p.date)}
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-gray-600">{p.supplier.name}</td>
-                    <td className="px-4 py-3 text-gray-600">{p.invoiceNo || "-"}</td>
-                    <td className="px-4 py-3 text-right text-gray-900">{formatPKR(p.total)}</td>
-                    <td className="px-4 py-3 text-right text-gray-900">{formatPKR(p.paid)}</td>
+                    <td className="text-slate-600">{p.supplier.name}</td>
+                    <td className="text-slate-600">{p.invoiceNo || "-"}</td>
+                    <td className="text-right text-slate-900">{formatPKR(p.total)}</td>
+                    <td className="text-right text-slate-900">{formatPKR(p.paid)}</td>
                     <td
-                      className={`px-4 py-3 text-right font-medium ${
-                        p.due > 0 ? "text-red-600" : "text-gray-900"
+                      className={`text-right font-medium ${
+                        p.due > 0 ? "text-red-600" : "text-slate-900"
                       }`}
                     >
                       {formatPKR(p.due)}
                     </td>
-                    <td className="px-4 py-3 text-gray-600">{p.status}</td>
-                    <td className="px-4 py-3 text-right text-gray-600">{p._count.items}</td>
+                    <td>
+                      <Badge tone={p.status === "received" ? "green" : p.status === "partial" ? "amber" : p.status === "returned" ? "amber" : "slate"}>
+                        {p.status}
+                      </Badge>
+                    </td>
+                    <td className="text-right text-slate-600">{p._count.items}</td>
                   </tr>
                 ))}
               </tbody>

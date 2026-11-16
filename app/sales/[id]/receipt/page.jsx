@@ -5,6 +5,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Receipt from "@/components/Receipt";
+import { Icon } from "@/components/ui.jsx";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 
@@ -45,10 +46,10 @@ export default async function ReceiptPage({ params }) {
   ]);
 
   if (!sale) {
-    return <p className="p-6 text-sm text-gray-600">Sale not found.</p>;
+    return <p className="p-6 text-sm text-slate-600">Sale not found.</p>;
   }
   if (user.role === "cashier" && sale.cashierId !== user.id) {
-    return <p className="p-6 text-sm text-gray-600">Access denied.</p>;
+    return <p className="p-6 text-sm text-slate-600">Access denied.</p>;
   }
 
   const settings = settingRow
@@ -95,12 +96,10 @@ export default async function ReceiptPage({ params }) {
   };
 
   return (
-    <div className="min-h-screen bg-white py-4">
+    <div className="min-h-screen bg-slate-100 py-4">
       <div className="no-print mx-auto mb-4 flex max-w-[80mm] justify-center">
-        <Link
-          href={`/sales/${sale.id}`}
-          className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-gray-200 hover:bg-gray-50"
-        >
+        <Link href={`/sales/${sale.id}`} className="btn btn-secondary btn-sm">
+          <Icon name="arrowLeft" className="h-4 w-4" />
           Back to sale
         </Link>
       </div>

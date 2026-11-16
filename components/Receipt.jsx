@@ -6,6 +6,7 @@
 
 import Link from "next/link";
 import { formatPKR, formatDate } from "@/lib/format";
+import { Icon } from "@/components/ui.jsx";
 
 export default function Receipt({ sale, settings }) {
   const currency = settings?.currency || "Rs";
@@ -132,13 +133,14 @@ export default function Receipt({ sale, settings }) {
         <button
           type="button"
           onClick={() => window.print()}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          className="btn btn-primary btn-sm"
         >
+          <Icon name="printer" className="h-4 w-4" />
           Print
         </button>
         <Link
           href={sale.id ? `/sales/${sale.id}` : "/sales"}
-          className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-gray-200 hover:bg-gray-50"
+          className="btn btn-secondary btn-sm"
         >
           Back to sale
         </Link>

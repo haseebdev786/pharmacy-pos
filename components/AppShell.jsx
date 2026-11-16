@@ -14,11 +14,11 @@ export default function AppShell({ user, children }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-slate-100">
       <PosSidebar user={user} open={open} onClose={() => setOpen(false)} />
       <div className="lg:pl-64">
         <PosHeader user={user} onMenuClick={() => setOpen(true)} />
-        <main className="mx-auto w-full max-w-6xl px-4 py-6">{children}</main>
+        <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">{children}</main>
       </div>
     </div>
   );

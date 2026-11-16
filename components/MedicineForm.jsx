@@ -22,9 +22,8 @@ const FORMS = [
 ];
 const UNITS = ["strip", "box", "bottle", "piece"];
 
-const inputClass =
-  "w-full rounded-lg bg-white px-3 py-2 text-sm text-gray-900 ring-1 ring-gray-300";
-const labelClass = "mb-1 block text-sm font-medium text-gray-700";
+const inputClass = "input";
+const labelClass = "label";
 
 export default function MedicineForm({ medicine, onCancelHref }) {
   const router = useRouter();
@@ -91,7 +90,7 @@ export default function MedicineForm({ medicine, onCancelHref }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100"
+      className="card card-pad"
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
@@ -209,7 +208,7 @@ export default function MedicineForm({ medicine, onCancelHref }) {
             onChange={(e) => setUnitsPerStrip(e.target.value)}
             className={inputClass}
           />
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="form-note">
             Base units in one {unit} (1 = sold per piece). Stock is counted
             in base units.
           </p>
@@ -252,12 +251,12 @@ export default function MedicineForm({ medicine, onCancelHref }) {
             onChange={(e) => setReorderLevel(e.target.value)}
             className={inputClass}
           />
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="form-note">
             At or below this stock the medicine shows as low stock.
           </p>
         </div>
         <div className="flex items-end pb-2">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
             <input
               type="checkbox"
               checked={requiresPrescription}
@@ -270,7 +269,7 @@ export default function MedicineForm({ medicine, onCancelHref }) {
       </div>
 
       {error ? (
-        <p role="alert" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p role="alert" className="form-error mt-4">
           {error}
         </p>
       ) : null}
@@ -279,13 +278,13 @@ export default function MedicineForm({ medicine, onCancelHref }) {
         <button
           type="submit"
           disabled={saving}
-          className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+          className="btn btn-primary"
         >
           {saving ? "Saving…" : isEdit ? "Save changes" : "Add medicine"}
         </button>
         <Link
           href={onCancelHref}
-          className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-900 ring-1 ring-gray-300"
+          className="btn btn-secondary"
         >
           Cancel
         </Link>

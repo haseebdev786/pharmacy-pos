@@ -13,6 +13,7 @@ import ExpenseDeleteButton from "@/components/ExpenseDeleteButton";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, hasRole } from "@/lib/session";
 import { formatDate, formatPKR, round2 } from "@/lib/format";
+import { PageHeader } from "@/components/ui.jsx";
 
 export const instant = false;
 
@@ -43,8 +44,8 @@ export default async function ExpensesPage({ searchParams }) {
     return (
       <AppShell user={shellUser}>
         <div className="space-y-6">
-          <h1 className="text-2xl font-bold text-gray-900">Expenses</h1>
-          <p className="rounded-2xl bg-white p-5 text-sm text-gray-600 shadow-sm ring-1 ring-gray-100">
+          <PageHeader title="Expenses" />
+          <p className="card card-pad text-sm text-slate-600">
             Access denied. Only Admin and Pharmacist can view expenses.
           </p>
         </div>
@@ -86,45 +87,43 @@ export default async function ExpensesPage({ searchParams }) {
   return (
     <AppShell user={shellUser}>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Expenses</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Shop expenses (rent, salaries, utilities). Expenses are subtracted
-            from sales profit in the profit report.
-          </p>
-        </div>
+        <PageHeader
+          title="Expenses"
+          description="Shop expenses (rent, salaries, utilities). Expenses are subtracted
+            from sales profit in the profit report."
+        />
 
-        <section className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
-          <h2 className="mb-3 font-semibold text-gray-900">Add expense</h2>
+        <section className="card card-pad">
+          <h2 className="section-title mb-3">Add expense</h2>
           <ExpenseForm />
         </section>
 
-        <section className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
+        <section className="card card-pad">
           <form method="get" className="flex flex-wrap items-end gap-3">
             <label className="block text-sm">
-              <span className="mb-1 block font-medium text-gray-700">From</span>
+              <span className="label">From</span>
               <input
                 type="date"
                 name="from"
                 defaultValue={fromParam}
-                className="rounded-lg border border-gray-300 px-3 py-2"
+                className="input"
               />
             </label>
             <label className="block text-sm">
-              <span className="mb-1 block font-medium text-gray-700">To</span>
+              <span className="label">To</span>
               <input
                 type="date"
                 name="to"
                 defaultValue={toParam}
-                className="rounded-lg border border-gray-300 px-3 py-2"
+                className="input"
               />
             </label>
             <label className="block text-sm">
-              <span className="mb-1 block font-medium text-gray-700">Category</span>
+              <span className="label">Category</span>
               <select
                 name="category"
                 defaultValue={categoryParam}
-                className="rounded-lg border border-gray-300 px-3 py-2"
+                className="input"
               >
                 <option value="">All categories</option>
                 {CATEGORIES.map((item) => (
@@ -136,59 +135,59 @@ export default async function ExpensesPage({ searchParams }) {
             </label>
             <button
               type="submit"
-              className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+              className="btn btn-secondary"
             >
               Filter
             </button>
           </form>
 
           <div className="mt-4 flex items-center justify-between gap-3">
-            <h2 className="font-semibold text-gray-900">
+            <h2 className="font-semibold text-slate-900">
               {expenses.length} expense{expenses.length === 1 ? "" : "s"}
               {expenses.length === 200 ? " (showing latest 200)" : ""}
             </h2>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-slate-600">
               Total:{" "}
-              <span className="font-semibold text-gray-900">
+              <span className="font-semibold text-slate-900">
                 {formatPKR(total, currency)}
               </span>
             </p>
           </div>
 
           {expenses.length === 0 ? (
-            <p className="mt-3 text-sm text-gray-500">
+            <p className="mt-3 text-sm text-slate-500">
               No expenses found for these filters. Add one above, or clear the
               filters to see all expenses.
             </p>
           ) : (
-            <div className="mt-3 overflow-x-auto">
-              <table className="w-full text-left text-sm">
+            <div className="table-wrap mt-3">
+              <table className="tbl">
                 <thead>
-                  <tr className="border-b text-xs uppercase tracking-wide text-gray-500">
-                    <th className="py-2 pr-3">Date</th>
-                    <th className="py-2 pr-3">Category</th>
-                    <th className="py-2 pr-3">Note</th>
-                    <th className="py-2 pr-3">Added by</th>
-                    <th className="py-2 pr-3 text-right">Amount</th>
-                    {isAdmin ? <th className="py-2">Actions</th> : null}
+                  <tr>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Note</th>
+                    <th>Added by</th>
+                    <th className="text-right">Amount</th>
+                    {isAdmin ? <th>Actions</th> : null}
                   </tr>
                 </thead>
                 <tbody>
                   {expenses.map((expense) => (
-                    <tr key={expense.id} className="border-b last:border-0">
-                      <td className="py-2 pr-3">{formatDate(expense.date)}</td>
-                      <td className="py-2 pr-3">{expense.category}</td>
-                      <td className="py-2 pr-3 text-gray-600">
+                    <tr key={expense.id}>
+                      <td>{formatDate(expense.date)}</td>
+                      <td>{expense.category}</td>
+                      <td className="text-slate-600">
                         {expense.note ?? "-"}
                       </td>
-                      <td className="py-2 pr-3 text-gray-600">
+                      <td className="text-slate-600">
                         {expense.createdBy?.name ?? "-"}
                       </td>
-                      <td className="py-2 pr-3 text-right font-medium">
+                      <td className="text-right font-medium">
                         {formatPKR(expense.amount, currency)}
                       </td>
                       {isAdmin ? (
-                        <td className="py-2">
+                        <td>
                           <ExpenseDeleteButton expenseId={expense.id} />
                         </td>
                       ) : null}
@@ -198,7 +197,7 @@ export default async function ExpensesPage({ searchParams }) {
               </table>
             </div>
           )}
-          <p className="mt-3 text-xs text-gray-500">
+          <p className="mt-3 text-xs text-slate-500">
             To correct a wrong expense, an Admin deletes it and it is re-added
             with the right details. Expenses cannot be edited in place.
           </p>

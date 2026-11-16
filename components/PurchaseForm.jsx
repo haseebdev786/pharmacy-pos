@@ -180,15 +180,14 @@ export default function PurchaseForm({ suppliers, medicines }) {
     }
   }
 
-  const inputClass =
-    "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900";
-  const labelClass = "block text-xs font-medium text-gray-500";
+  const inputClass = "input";
+  const labelClass = "block text-xs font-medium text-slate-500";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid gap-3 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="card card-pad grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <label className="block text-sm">
-          <span className="font-medium text-gray-900">Supplier *</span>
+          <span className="label">Supplier *</span>
           <select
             className={inputClass}
             value={supplierId}
@@ -209,7 +208,7 @@ export default function PurchaseForm({ suppliers, medicines }) {
           ) : null}
         </label>
         <label className="block text-sm">
-          <span className="font-medium text-gray-900">Invoice no.</span>
+          <span className="label">Invoice no.</span>
           <input
             className={inputClass}
             value={invoiceNo}
@@ -218,7 +217,7 @@ export default function PurchaseForm({ suppliers, medicines }) {
           />
         </label>
         <label className="block text-sm">
-          <span className="font-medium text-gray-900">Date</span>
+          <span className="label">Date</span>
           <input
             type="date"
             className={inputClass}
@@ -227,13 +226,13 @@ export default function PurchaseForm({ suppliers, medicines }) {
           />
         </label>
         <div className="text-sm">
-          <span className="font-medium text-gray-900">Lines</span>
-          <p className="mt-2 text-gray-600">{lines.length} line(s)</p>
+          <span className="label">Lines</span>
+          <p className="mt-2 text-slate-600">{lines.length} line(s)</p>
         </div>
       </div>
 
       {medicines.length === 0 ? (
-        <p className="rounded-2xl bg-white p-5 text-sm text-gray-600 shadow-sm ring-1 ring-gray-100">
+        <p className="card card-pad text-sm text-slate-600">
           No active medicines yet. Add medicines first, then record purchases.
         </p>
       ) : null}
@@ -266,15 +265,15 @@ export default function PurchaseForm({ suppliers, medicines }) {
         return (
           <div
             key={index}
-            className="space-y-3 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100"
+            className="card card-pad space-y-3"
           >
             <div className="flex items-center justify-between">
-              <h2 className="font-semibold text-gray-900">Line {index + 1}</h2>
+              <h2 className="section-title">Line {index + 1}</h2>
               {lines.length > 1 ? (
                 <button
                   type="button"
                   onClick={() => removeLine(index)}
-                  className="text-sm font-medium text-red-600 hover:text-red-800"
+                  className="btn btn-danger-outline btn-sm"
                 >
                   Remove line
                 </button>
@@ -381,14 +380,14 @@ export default function PurchaseForm({ suppliers, medicines }) {
             </div>
 
             <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
-              <p className="text-gray-600">
+              <p className="text-slate-600">
                 Line total:{" "}
-                <span className="font-medium text-gray-900">
+                <span className="font-medium text-slate-900">
                   {formatPKR(lineTotal(line))}
                 </span>
               </p>
               {showStripHelper ? (
-                <p className="text-gray-500">
+                <p className="text-slate-500">
                   {qty} base units = {(qty / medicine.unitsPerStrip).toFixed(2)}{" "}
                   {medicine.unit}(s) ({medicine.unitsPerStrip} units per {medicine.unit})
                 </p>
@@ -401,15 +400,15 @@ export default function PurchaseForm({ suppliers, medicines }) {
       <button
         type="button"
         onClick={addLine}
-        className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
+        className="btn btn-secondary"
       >
         + Add line
       </button>
 
-      <div className="space-y-3 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
+      <div className="card card-pad space-y-3">
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block text-sm">
-            <span className="font-medium text-gray-900">Discount (Rs)</span>
+            <span className="label">Discount (Rs)</span>
             <input
               type="number"
               min="0"
@@ -421,7 +420,7 @@ export default function PurchaseForm({ suppliers, medicines }) {
             />
           </label>
           <label className="block text-sm">
-            <span className="font-medium text-gray-900">Paid (Rs)</span>
+            <span className="label">Paid (Rs)</span>
             <input
               type="number"
               min="0"
@@ -435,25 +434,25 @@ export default function PurchaseForm({ suppliers, medicines }) {
         </div>
         <dl className="space-y-1 text-sm">
           <div className="flex justify-between">
-            <dt className="text-gray-600">Subtotal</dt>
-            <dd className="font-medium text-gray-900">{formatPKR(subtotal)}</dd>
+            <dt className="text-slate-600">Subtotal</dt>
+            <dd className="font-medium text-slate-900">{formatPKR(subtotal)}</dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-gray-600">Discount</dt>
-            <dd className="font-medium text-gray-900">− {formatPKR(discountAmount)}</dd>
+            <dt className="text-slate-600">Discount</dt>
+            <dd className="font-medium text-slate-900">− {formatPKR(discountAmount)}</dd>
           </div>
-          <div className="flex justify-between border-t border-gray-100 pt-1">
-            <dt className="font-medium text-gray-900">Total</dt>
-            <dd className="font-bold text-gray-900">{formatPKR(total)}</dd>
-          </div>
-          <div className="flex justify-between">
-            <dt className="text-gray-600">Paid</dt>
-            <dd className="font-medium text-gray-900">{formatPKR(paidAmount)}</dd>
+          <div className="flex justify-between border-t border-slate-100 pt-1">
+            <dt className="font-medium text-slate-900">Total</dt>
+            <dd className="font-bold text-slate-900">{formatPKR(total)}</dd>
           </div>
           <div className="flex justify-between">
-            <dt className="font-medium text-gray-900">Due</dt>
+            <dt className="text-slate-600">Paid</dt>
+            <dd className="font-medium text-slate-900">{formatPKR(paidAmount)}</dd>
+          </div>
+          <div className="flex justify-between">
+            <dt className="font-medium text-slate-900">Due</dt>
             <dd
-              className={`font-bold ${due > 0 ? "text-red-600" : "text-gray-900"}`}
+              className={`font-bold ${due > 0 ? "text-red-600" : "text-slate-900"}`}
             >
               {formatPKR(due)}
             </dd>
@@ -462,7 +461,7 @@ export default function PurchaseForm({ suppliers, medicines }) {
       </div>
 
       {error ? (
-        <p role="alert" className="text-sm font-medium text-red-600">
+        <p role="alert" className="form-error">
           {error}
         </p>
       ) : null}
@@ -470,7 +469,7 @@ export default function PurchaseForm({ suppliers, medicines }) {
       <button
         type="submit"
         disabled={saving || medicines.length === 0}
-        className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-50"
+        className="btn btn-primary"
       >
         {saving ? "Saving…" : "Save purchase"}
       </button>
